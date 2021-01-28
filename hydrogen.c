@@ -1,0 +1,226 @@
+/**
+ * @file   hydrogen/hydrogen.c
+ * @author Peter Züger
+ * @date   25.01.2021
+ * @brief  libhydrogen Micropython wrapper
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2021 Peter Züger
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use, copy,
+ * modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+ * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+#include "py/mpconfig.h"
+
+#if defined(MODULE_HYDROGEN_ENABLED) && MODULE_HYDROGEN_ENABLED == 1
+
+#include "py/obj.h"
+#include "py/runtime.h"
+#include "py/objarray.h"
+
+#include <lib/libhydrogen/hydrogen.h>
+
+static void hydrogen_mp_obj_get_data(mp_obj_t data_p, uint8_t** data, size_t* size){
+    if(mp_obj_is_type(data_p, &mp_type_bytearray) || mp_obj_is_type(data_p, &mp_type_memoryview)){
+        *data = (uint8_t*)((mp_obj_array_t*)data_p)->items;
+        *size = ((mp_obj_array_t*)data_p)->len;
+    }else{
+        // raises TypeError
+        *data = (uint8_t*)mp_obj_str_get_data(data_p, size);
+    }
+}
+
+
+typedef struct _hydrogen_sign_obj_t{
+    // base represents some basic information, like type
+    mp_obj_base_t base;
+
+    hydro_sign_state st;
+}hydrogen_sign_obj_t;
+
+
+mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
+STATIC void hydrogen_sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in);
+STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
+STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in);
+
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_sign_update_fun_obj, hydrogen_sign_update);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_sign_final_create_fun_obj, hydrogen_sign_final_create);
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_final_verify_fun_obj, hydrogen_sign_final_verify);
+
+STATIC const mp_rom_map_elem_t hydrogen_sign_locals_dict_table[]={
+    // class methods
+    { MP_ROM_QSTR(MP_QSTR_update),       MP_ROM_PTR(&hydrogen_sign_update_fun_obj)       },
+    { MP_ROM_QSTR(MP_QSTR_final_create), MP_ROM_PTR(&hydrogen_sign_final_create_fun_obj) },
+    { MP_ROM_QSTR(MP_QSTR_final_verify), MP_ROM_PTR(&hydrogen_sign_final_verify_fun_obj) },
+};
+STATIC MP_DEFINE_CONST_DICT(hydrogen_sign_locals_dict,hydrogen_sign_locals_dict_table);
+
+
+const mp_obj_type_t hydrogen_sign_type={
+    // "inherit" the type "type"
+    { &mp_type_type },
+    // give it a name
+    .name = MP_QSTR_sign,
+    // give it a print-function
+    .print = hydrogen_sign_print,
+    // give it a constructor
+    .make_new = hydrogen_sign_make_new,
+    // and the global members
+    .locals_dict = (mp_obj_dict_t*)&hydrogen_sign_locals_dict,
+};
+
+mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
+                            size_t n_args,
+                            size_t n_kw,
+                            const mp_obj_t* args){
+    mp_arg_check_num(n_args, n_kw, 1, 1, false);
+
+    // raises MemoryError
+    hydrogen_sign_obj_t* self = m_new_obj(hydrogen_sign_obj_t);
+
+    self->base.type = &hydrogen_sign_type;
+
+    size_t size;
+
+    // raises TypeError
+    const char* context = mp_obj_str_get_data(args[0], &size);
+
+    if(size != hydro_sign_CONTEXTBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size."));
+    }
+
+    hydro_sign_init(&self->st, context);
+
+    return MP_OBJ_FROM_PTR(self);
+}
+
+STATIC void hydrogen_sign_print(const mp_print_t* print,
+                            mp_obj_t self_in, mp_print_kind_t kind){
+    //hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+    mp_printf(print, "sign()");
+}
+
+STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
+    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+
+    size_t size;
+    uint8_t* data;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(data_in, &data, &size);
+
+    hydro_sign_update(&self->st, data, size);
+
+    return mp_const_none;
+}
+
+STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
+    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(key_in, &key, &key_size);
+
+    if(key_size != hydro_sign_SECRETKEYBYTES){
+        hydro_memzero(key, key_size);
+        mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size."));
+    }
+
+    uint8_t signature[hydro_sign_BYTES];
+
+    hydro_sign_final_create(&self->st, signature, key);
+
+    hydro_memzero(key, key_size);
+
+    return mp_obj_new_bytes(signature, hydro_sign_BYTES);
+}
+
+STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in){
+    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+
+    size_t signature_size;
+    uint8_t* signature;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(signature_in, &signature, &signature_size);
+
+    if(signature_size != hydro_sign_BYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Signature has the wrong size."));
+    }
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(key_in, &key, &key_size);
+
+    if(key_size != hydro_sign_PUBLICKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Public Key has the wrong size."));
+    }
+
+    if(hydro_sign_final_verify(&self->st, signature, key) != 0){
+        return mp_const_false;
+    }
+    return mp_const_true;
+}
+
+
+STATIC mp_obj_t hydrogen_keygen(void){
+    hydro_sign_keypair key_pair;
+    hydro_sign_keygen(&key_pair);
+
+    mp_obj_t tuple[2] = {
+        mp_obj_new_bytes(key_pair.pk, hydro_sign_PUBLICKEYBYTES),
+        mp_obj_new_bytes(key_pair.sk, hydro_sign_SECRETKEYBYTES),
+    };
+
+    hydro_memzero(&key_pair, hydro_sign_PUBLICKEYBYTES + hydro_sign_SECRETKEYBYTES);
+
+    return mp_obj_new_tuple(2, tuple);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_keygen_fun_obj, hydrogen_keygen);
+
+
+STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)    },
+
+    { MP_OBJ_NEW_QSTR(MP_QSTR_keygen),   MP_ROM_PTR(&hydrogen_keygen_fun_obj) },
+
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),     MP_ROM_PTR(&hydrogen_sign_type)      },
+};
+
+STATIC MP_DEFINE_CONST_DICT(
+    mp_module_hydrogen_globals,
+    hydrogen_globals_table
+    );
+
+const mp_obj_module_t mp_module_hydrogen = {
+    .base = { &mp_type_module },
+    .globals = (mp_obj_dict_t*)&mp_module_hydrogen_globals,
+};
+
+MP_REGISTER_MODULE(MP_QSTR_hydrogen, mp_module_hydrogen, MODULE_HYDROGEN_ENABLED);
+
+#endif /* defined(MODULE_HYDROGEN_ENABLED) && MODULE_HYDROGEN_ENABLED == 1 */
