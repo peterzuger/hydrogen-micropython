@@ -61,6 +61,113 @@ static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t conte
     return context;
 }
 
+typedef struct _hydrogen_hash_obj_t{
+    // base represents some basic information, like type
+    mp_obj_base_t base;
+
+    hydro_hash_state st;
+}hydrogen_hash_obj_t;
+
+
+mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
+STATIC void hydrogen_hash_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in);
+STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args);
+
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_hash_update_fun_obj, hydrogen_hash_update);
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_final_fun_obj, 1, 2, hydrogen_hash_final);
+
+
+STATIC const mp_rom_map_elem_t hydrogen_hash_locals_dict_table[]={
+    // class methods
+    { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hydrogen_hash_update_fun_obj) },
+    { MP_ROM_QSTR(MP_QSTR_final),  MP_ROM_PTR(&hydrogen_hash_final_fun_obj)  },
+};
+STATIC MP_DEFINE_CONST_DICT(hydrogen_hash_locals_dict,hydrogen_hash_locals_dict_table);
+
+
+const mp_obj_type_t hydrogen_hash_type={
+    // "inherit" the type "type"
+    { &mp_type_type },
+    // give it a name
+    .name = MP_QSTR_hash,
+    // give it a print-function
+    .print = hydrogen_hash_print,
+    // give it a constructor
+    .make_new = hydrogen_hash_make_new,
+    // and the global members
+    .locals_dict = (mp_obj_dict_t*)&hydrogen_hash_locals_dict,
+};
+
+mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
+                                        size_t n_args,
+                                        size_t n_kw,
+                                        const mp_obj_t* args){
+    mp_arg_check_num(n_args, n_kw, 1, 2, false);
+
+    // raises MemoryError
+    hydrogen_hash_obj_t* self = m_new_obj(hydrogen_hash_obj_t);
+
+    self->base.type = &hydrogen_hash_type;
+
+    // raises TypeError, ValueError
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
+    uint8_t* key = NULL;
+
+    if(n_args == 2){
+        size_t key_size;
+
+        // raises TypeError
+        hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+        if(key_size != hydro_hash_KEYBYTES){
+            hydro_memzero(key, key_size);
+            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+        }
+    }
+
+    hydro_hash_init(&self->st, context, key);
+
+    return MP_OBJ_FROM_PTR(self);
+}
+
+STATIC void hydrogen_hash_print(const mp_print_t* print,
+                                        mp_obj_t self_in, mp_print_kind_t kind){
+    //hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
+    mp_printf(print, "hash()");
+}
+
+STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
+    hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
+
+    size_t size;
+    uint8_t* data;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(data_in, &data, &size);
+
+    hydro_hash_update(&self->st, data, size);
+
+    return mp_const_none;
+}
+
+STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
+    hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(args[0]);
+
+    size_t size = hydro_hash_BYTES;
+
+    if(n_args == 2){
+        // raises TypeError
+        size = mp_obj_get_int(args[1]);
+    }
+
+    uint8_t* hash = alloca(size);
+
+    hydro_hash_final(&self->st, hash, size);
+
+    return mp_obj_new_bytes(hash, size);
+}
+
 
 typedef struct _hydrogen_sign_obj_t{
     // base represents some basic information, like type
@@ -238,6 +345,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen), MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
 
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),        MP_ROM_PTR(&hydrogen_hash_type)           },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign),        MP_ROM_PTR(&hydrogen_sign_type)           },
 };
 
