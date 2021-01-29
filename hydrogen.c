@@ -52,7 +52,7 @@ static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t conte
     size_t size;
 
     // raises TypeError
-    const char* context = mp_obj_str_get_data(args[0], &size);
+    const char* context = mp_obj_str_get_data(context_in, &size);
 
     if(size != context_size){
         mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size."));
