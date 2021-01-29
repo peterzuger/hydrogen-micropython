@@ -114,7 +114,7 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
     uint8_t* key = NULL;
 
-    if(n_args == 2){
+    if(n_args == 2 && args[1] != mp_const_none){
         size_t key_size;
 
         // raises TypeError
