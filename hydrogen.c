@@ -48,6 +48,19 @@ static void hydrogen_mp_obj_get_data(mp_obj_t data_p, uint8_t** data, size_t* si
     }
 }
 
+static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t context_size){
+    size_t size;
+
+    // raises TypeError
+    const char* context = mp_obj_str_get_data(args[0], &size);
+
+    if(size != context_size){
+        mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size."));
+    }
+
+    return context;
+}
+
 
 typedef struct _hydrogen_sign_obj_t{
     // base represents some basic information, like type
@@ -100,14 +113,8 @@ mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
 
     self->base.type = &hydrogen_sign_type;
 
-    size_t size;
-
-    // raises TypeError
-    const char* context = mp_obj_str_get_data(args[0], &size);
-
-    if(size != hydro_sign_CONTEXTBYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size."));
-    }
+    // raises TypeError, ValueError
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_sign_CONTEXTBYTES);
 
     hydro_sign_init(&self->st, context);
 
