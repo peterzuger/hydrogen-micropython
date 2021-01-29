@@ -193,6 +193,14 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     return mp_const_true;
 }
 
+STATIC mp_obj_t hydrogen_init(void){
+    if(hydro_init() != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_init() failed."));
+    }
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_init_fun_obj, hydrogen_init);
+
 
 STATIC mp_obj_t hydrogen_hash_keygen(void){
     uint8_t key_buf[hydro_hash_KEYBYTES];
@@ -224,12 +232,13 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_key
 
 
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),    MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)         },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_init),        MP_ROM_PTR(&hydrogen_init_fun_obj)        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen), MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),     MP_ROM_PTR(&hydrogen_sign_type)      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),        MP_ROM_PTR(&hydrogen_sign_type)           },
 };
 
 STATIC MP_DEFINE_CONST_DICT(
