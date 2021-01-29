@@ -194,7 +194,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
 }
 
 
-STATIC mp_obj_t hydrogen_keygen(void){
+STATIC mp_obj_t hydrogen_sign_keygen(void){
     hydro_sign_keypair key_pair;
     hydro_sign_keygen(&key_pair);
 
@@ -207,13 +207,13 @@ STATIC mp_obj_t hydrogen_keygen(void){
 
     return mp_obj_new_tuple(2, tuple);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_keygen_fun_obj, hydrogen_keygen);
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_keygen);
 
 
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)    },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_keygen),   MP_ROM_PTR(&hydrogen_keygen_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign),     MP_ROM_PTR(&hydrogen_sign_type)      },
 };
