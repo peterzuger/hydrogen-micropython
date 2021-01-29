@@ -194,6 +194,19 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
 }
 
 
+STATIC mp_obj_t hydrogen_hash_keygen(void){
+    uint8_t key_buf[hydro_hash_KEYBYTES];
+
+    hydro_hash_keygen(key_buf);
+
+    mp_obj_t key = mp_obj_new_bytes(key_buf, hydro_hash_KEYBYTES);
+
+    hydro_memzero(key_buf, hydro_hash_KEYBYTES);
+
+    return key;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
+
 STATIC mp_obj_t hydrogen_sign_keygen(void){
     hydro_sign_keypair key_pair;
     hydro_sign_keygen(&key_pair);
@@ -214,6 +227,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__), MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)    },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen), MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj) },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign),     MP_ROM_PTR(&hydrogen_sign_type)      },
 };
