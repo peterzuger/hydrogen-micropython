@@ -341,6 +341,14 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_key
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR___name__),    MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)         },
 
+#if HYDRO_INIT_ON_IMPORT
+#if MICROPY_MODULE_BUILTIN_INIT
+    { MP_ROM_QSTR(MP_QSTR___init__),        MP_ROM_PTR(&hydrogen_init_fun_obj)        },
+#else
+#error "__init__ not enabled: set MICROPY_MODULE_BUILTIN_INIT=1 to enable"
+#endif
+#endif
+
     { MP_OBJ_NEW_QSTR(MP_QSTR_init),        MP_ROM_PTR(&hydrogen_init_fun_obj)        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen), MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
