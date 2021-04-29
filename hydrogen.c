@@ -358,6 +358,56 @@ STATIC mp_obj_t hydrogen_init(void){
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_init_fun_obj, hydrogen_init);
 
+/**
+ * Python: hydrogen.random_u32()
+ */
+STATIC mp_obj_t hydrogen_random_u32(void){
+    return mp_obj_new_int(hydro_random_u32());
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u32);
+
+/**
+ * Python: hydrogen.random_uniform(upper_bound)
+ * @param upper_bound
+ */
+STATIC mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
+    return mp_obj_new_int(hydro_random_uniform(mp_obj_get_int(upper_bound)));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
+
+/**
+ * Python: hydrogen.random_buf(len)
+ * @param len
+ */
+STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
+    size_t len = mp_obj_get_int(len_in);
+
+    uint8_t* data = alloca(len);
+
+    hydro_random_buf(data, len);
+
+    // FIXME: copies all of the data into a new buffer
+    return mp_obj_new_bytes(data, len);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
+
+/**
+ * Python: hydrogen.random_ratchet()
+ */
+STATIC mp_obj_t hydrogen_random_ratchet(void){
+    hydrogen_random_ratchet();
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_ratchet_fun_obj, hydrogen_random_ratchet);
+
+/**
+ * Python: hydrogen.random_reseed()
+ */
+STATIC mp_obj_t hydrogen_random_reseed(void){
+    hydrogen_random_reseed();
+    return mp_const_none;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random_reseed);
 
 /**
  * Python: hydrogen.hash_keygen()
@@ -395,22 +445,27 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_key
 
 
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),    MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),       MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)            },
 
 #if HYDRO_INIT_ON_IMPORT
 #if MICROPY_MODULE_BUILTIN_INIT
-    { MP_ROM_QSTR(MP_QSTR___init__),        MP_ROM_PTR(&hydrogen_init_fun_obj)        },
+    { MP_ROM_QSTR(MP_QSTR___init__),           MP_ROM_PTR(&hydrogen_init_fun_obj)           },
 #else
 #error "__init__ not enabled: set MICROPY_MODULE_BUILTIN_INIT=1 to enable"
 #endif
 #endif
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_init),        MP_ROM_PTR(&hydrogen_init_fun_obj)        },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen), MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen), MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_init),           MP_ROM_PTR(&hydrogen_init_fun_obj)           },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),     MP_ROM_PTR(&hydrogen_random_u32_fun_obj)     },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform), MP_ROM_PTR(&hydrogen_random_uniform_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),     MP_ROM_PTR(&hydrogen_random_buf_fun_obj)     },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet), MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),  MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),    MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),    MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)    },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),        MP_ROM_PTR(&hydrogen_hash_type)           },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),        MP_ROM_PTR(&hydrogen_sign_type)           },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),           MP_ROM_PTR(&hydrogen_hash_type)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),           MP_ROM_PTR(&hydrogen_sign_type)              },
 };
 
 STATIC MP_DEFINE_CONST_DICT(
