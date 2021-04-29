@@ -99,6 +99,11 @@ const mp_obj_type_t hydrogen_hash_type={
     .locals_dict = (mp_obj_dict_t*)&hydrogen_hash_locals_dict,
 };
 
+/**
+ * Python: hydrogen.hash(context, key=None)
+ * @param context
+ * @param key
+ */
 mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
                                         size_t n_args,
                                         size_t n_kw,
@@ -131,12 +136,21 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
     return MP_OBJ_FROM_PTR(self);
 }
 
+/**
+ * Python: print(hydrogen.hash(context, key))
+ * @param obj
+ */
 STATIC void hydrogen_hash_print(const mp_print_t* print,
                                         mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "hash()");
 }
 
+/**
+ * Python: hydrogen.hash.update(self, data)
+ * @param self
+ * @param data
+ */
 STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
@@ -151,6 +165,11 @@ STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
     return mp_const_none;
 }
 
+/**
+ * Python: hydrogen.hash.final(self[, hash_size])
+ * @param self
+ * @param hash_size
+ */
 STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
     hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(args[0]);
 
@@ -209,6 +228,10 @@ const mp_obj_type_t hydrogen_sign_type={
     .locals_dict = (mp_obj_dict_t*)&hydrogen_sign_locals_dict,
 };
 
+/**
+ * Python: hydrogen.sign(context)
+ * @param context
+ */
 mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
                             size_t n_args,
                             size_t n_kw,
@@ -228,12 +251,21 @@ mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
     return MP_OBJ_FROM_PTR(self);
 }
 
+/**
+ * Python: print(hydrogen.sign(context))
+ * @param obj
+ */
 STATIC void hydrogen_sign_print(const mp_print_t* print,
                             mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "sign()");
 }
 
+/**
+ * Python: hydrogen.sign.update(self, data)
+ * @param self
+ * @param data
+ */
 STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
@@ -248,6 +280,11 @@ STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
     return mp_const_none;
 }
 
+/**
+ * Python: hydrogen.sign.final_create(self, key)
+ * @param self
+ * @param key
+ */
 STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
@@ -271,6 +308,12 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
     return mp_obj_new_bytes(signature, hydro_sign_BYTES);
 }
 
+/**
+ * Python: hydrogen.sign.final_verify(self, signature, key)
+ * @param self
+ * @param signature
+ * @param key
+ */
 STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in){
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
@@ -300,6 +343,9 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     return mp_const_true;
 }
 
+/**
+ * Python: hydrogen.init()
+ */
 STATIC mp_obj_t hydrogen_init(void){
     if(hydro_init() != 0){
         mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_init() failed."));
@@ -309,6 +355,9 @@ STATIC mp_obj_t hydrogen_init(void){
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_init_fun_obj, hydrogen_init);
 
 
+/**
+ * Python: hydrogen.hash_keygen()
+ */
 STATIC mp_obj_t hydrogen_hash_keygen(void){
     uint8_t key_buf[hydro_hash_KEYBYTES];
 
@@ -322,6 +371,9 @@ STATIC mp_obj_t hydrogen_hash_keygen(void){
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
 
+/**
+ * Python: hydrogen.sign_keygen()
+ */
 STATIC mp_obj_t hydrogen_sign_keygen(void){
     hydro_sign_keypair key_pair;
     hydro_sign_keygen(&key_pair);
