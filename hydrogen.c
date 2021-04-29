@@ -410,6 +410,55 @@ STATIC mp_obj_t hydrogen_random_reseed(void){
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random_reseed);
 
 /**
+ * Python: hydrogen.hash_hash(context, data, key=None[, hash_size])
+ * @param context
+ * @param data
+ * @param key
+ * @param hash_size
+ */
+STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
+
+    size_t size;
+    uint8_t* data;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &data, &size);
+
+    uint8_t* key = NULL;
+
+    if(n_args >= 3 && args[2] != mp_const_none){
+        size_t key_size;
+
+        // raises TypeError
+        hydrogen_mp_obj_get_data(args[2], &key, &key_size);
+
+        if(key_size != hydro_hash_KEYBYTES){
+            hydro_memzero(key, key_size);
+            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+        }
+    }
+
+    size_t hash_size = hydro_hash_BYTES;
+
+    if(n_args == 4){
+        // raises TypeError
+        hash_size = mp_obj_get_int(args[3]);
+
+        if((hash_size < hydro_hash_BYTES_MIN) || (hash_size > hydro_hash_BYTES_MAX)){
+            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range."));
+        }
+    }
+
+    uint8_t* hash = alloca(hash_size);
+
+    hydro_hash_hash(hash, hash_size, data, size, context, key);
+
+    return mp_obj_new_bytes(hash, hash_size);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
+
+/**
  * Python: hydrogen.hash_keygen()
  */
 STATIC mp_obj_t hydrogen_hash_keygen(void){
@@ -461,6 +510,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),     MP_ROM_PTR(&hydrogen_random_buf_fun_obj)     },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet), MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),  MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),      MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)      },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),    MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)    },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),    MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)    },
 
