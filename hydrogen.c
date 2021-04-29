@@ -178,6 +178,10 @@ STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
     if(n_args == 2){
         // raises TypeError
         size = mp_obj_get_int(args[1]);
+
+        if((size < hydro_hash_BYTES_MIN) || (size > hydro_hash_BYTES_MAX)){
+            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range."));
+        }
     }
 
     uint8_t* hash = alloca(size);
