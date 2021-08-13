@@ -482,10 +482,58 @@ STATIC mp_obj_t hydrogen_hash_keygen(void){
     hydro_hash_keygen(key_buf);
 
     return hydrogen_mp_obj_bytes(key_buf, hydro_hash_KEYBYTES);
-
-
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
+
+/**
+ * Python: hydrogen.kdf_keygen()
+ */
+STATIC mp_obj_t hydrogen_kdf_keygen(void){
+    uint8_t* key_buf = m_malloc(hydro_kdf_KEYBYTES);
+
+    hydro_kdf_keygen(key_buf);
+
+    return hydrogen_mp_obj_bytes(key_buf, hydro_kdf_KEYBYTES);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keygen);
+
+/**
+ * Python: hydrogen.kdf_derive_from_key(context, master_key, subkey_id[, subkey_len])
+ */
+STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_kdf_CONTEXTBYTES);
+
+    size_t master_size;
+    uint8_t* master_key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &master_key, &master_size);
+
+    if(master_size != hydro_kdf_KEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master key has the wrong size."));
+    }
+
+    // raises TypeError
+    uint64_t subkey_id = mp_obj_get_int(args[2]);
+
+    size_t subkey_size = hydro_kdf_KEYBYTES;
+
+    if(n_args == 4){
+        // raises TypeError
+        subkey_size = mp_obj_get_int(args[3]);
+
+        if((subkey_size < hydro_kdf_BYTES_MIN) || (subkey_size > hydro_kdf_BYTES_MAX)){
+            mp_raise_ValueError(MP_ERROR_TEXT("Subkey size out of range."));
+        }
+    }
+
+    uint8_t* subkey_buf = m_malloc(subkey_size);
+
+    hydro_kdf_derive_from_key(subkey_buf, subkey_size, subkey_id, context, master_key);
+
+    return hydrogen_mp_obj_bytes(subkey_buf, subkey_size);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
 
 /**
  * Python: hydrogen.sign_keygen()
@@ -516,29 +564,31 @@ STATIC const mp_obj_tuple_t hydrogen_version_obj = {
 };
 
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),       MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)            },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_version),        MP_ROM_PTR(&hydrogen_version_obj)            },
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),            MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)                 },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_version),             MP_ROM_PTR(&hydrogen_version_obj)                 },
 
 #if HYDRO_INIT_ON_IMPORT
 #if MICROPY_MODULE_BUILTIN_INIT
-    { MP_ROM_QSTR(MP_QSTR___init__),           MP_ROM_PTR(&hydrogen_init_fun_obj)           },
+    { MP_ROM_QSTR(MP_QSTR___init__),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
 #else
 #error "__init__ not enabled: set MICROPY_MODULE_BUILTIN_INIT=1 to enable"
 #endif
 #endif
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_init),           MP_ROM_PTR(&hydrogen_init_fun_obj)           },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),     MP_ROM_PTR(&hydrogen_random_u32_fun_obj)     },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform), MP_ROM_PTR(&hydrogen_random_uniform_fun_obj) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),     MP_ROM_PTR(&hydrogen_random_buf_fun_obj)     },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet), MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),  MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)  },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),      MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)      },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),    MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)    },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),    MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_init),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),          MP_ROM_PTR(&hydrogen_random_u32_fun_obj)          },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform),      MP_ROM_PTR(&hydrogen_random_uniform_fun_obj)      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),          MP_ROM_PTR(&hydrogen_random_buf_fun_obj)          },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet),      MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj)      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),       MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)       },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),           MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)           },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),         MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_keygen),          MP_ROM_PTR(&hydrogen_kdf_keygen_fun_obj)          },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_derive_from_key), MP_ROM_PTR(&hydrogen_kdf_derive_from_key_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),         MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)         },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),           MP_ROM_PTR(&hydrogen_hash_type)              },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),           MP_ROM_PTR(&hydrogen_sign_type)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),                MP_ROM_PTR(&hydrogen_hash_type)                   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),                MP_ROM_PTR(&hydrogen_sign_type)                   },
 };
 
 STATIC MP_DEFINE_CONST_DICT(
