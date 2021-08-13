@@ -117,11 +117,11 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
 
     // raises TypeError, ValueError
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
+
+    size_t key_size;
     uint8_t* key = NULL;
 
     if(n_args == 2 && args[1] != mp_const_none){
-        size_t key_size;
-
         // raises TypeError
         hydrogen_mp_obj_get_data(args[1], &key, &key_size);
 
@@ -132,6 +132,8 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
     }
 
     hydro_hash_init(&self->st, context, key);
+
+    hydro_memzero(key, key_size);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -427,11 +429,10 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &data, &size);
 
+    size_t key_size;
     uint8_t* key = NULL;
 
     if(n_args >= 3 && args[2] != mp_const_none){
-        size_t key_size;
-
         // raises TypeError
         hydrogen_mp_obj_get_data(args[2], &key, &key_size);
 
@@ -455,6 +456,8 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     uint8_t* hash = alloca(hash_size);
 
     hydro_hash_hash(hash, hash_size, data, size, context, key);
+
+    hydro_memzero(key, key_size);
 
     return mp_obj_new_bytes(hash, hash_size);
 }
