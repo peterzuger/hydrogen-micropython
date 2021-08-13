@@ -32,9 +32,11 @@
 
 #if defined(MODULE_HYDROGEN_ENABLED) && MODULE_HYDROGEN_ENABLED == 1
 
+#include "py/misc.h"
 #include "py/obj.h"
-#include "py/runtime.h"
 #include "py/objarray.h"
+#include "py/objstr.h"
+#include "py/runtime.h"
 
 #include <lib/libhydrogen/hydrogen.h>
 
@@ -46,6 +48,15 @@ static void hydrogen_mp_obj_get_data(mp_obj_t data_p, uint8_t** data, size_t* si
         // raises TypeError
         *data = (uint8_t*)mp_obj_str_get_data(data_p, size);
     }
+}
+
+mp_obj_t hydrogen_mp_obj_bytes(const uint8_t* data, size_t len){
+    mp_obj_str_t *o = m_new_obj(mp_obj_str_t);
+    o->base.type = &mp_type_bytes;
+    o->data = data;
+    o->len = len;
+    o->hash = qstr_compute_hash(data, len);
+    return MP_OBJ_FROM_PTR(o);
 }
 
 static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t context_size){
@@ -186,11 +197,11 @@ STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
         }
     }
 
-    uint8_t* hash = alloca(size);
+    uint8_t* hash = m_malloc(size);
 
     hydro_hash_final(&self->st, hash, size);
 
-    return mp_obj_new_bytes(hash, size);
+    return hydrogen_mp_obj_bytes(hash, size);
 }
 
 
@@ -305,13 +316,13 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
         mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size."));
     }
 
-    uint8_t signature[hydro_sign_BYTES];
+    uint8_t* signature = m_malloc(hydro_sign_BYTES);
 
     hydro_sign_final_create(&self->st, signature, key);
 
     hydro_memzero(key, key_size);
 
-    return mp_obj_new_bytes(signature, hydro_sign_BYTES);
+    return hydrogen_mp_obj_bytes(signature, hydro_sign_BYTES);
 }
 
 /**
@@ -386,12 +397,11 @@ STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
     // raises TypeError
     size_t len = mp_obj_get_int(len_in);
 
-    uint8_t* data = alloca(len);
+    uint8_t* data = m_malloc(len);
 
     hydro_random_buf(data, len);
 
-    // FIXME: copies all of the data into a new buffer
-    return mp_obj_new_bytes(data, len);
+    return hydrogen_mp_obj_bytes(data, len);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
 
@@ -453,13 +463,13 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
         }
     }
 
-    uint8_t* hash = alloca(hash_size);
+    uint8_t* hash = m_malloc(hash_size);
 
     hydro_hash_hash(hash, hash_size, data, size, context, key);
 
     hydro_memzero(key, key_size);
 
-    return mp_obj_new_bytes(hash, hash_size);
+    return hydrogen_mp_obj_bytes(hash, hash_size);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
 
@@ -467,15 +477,13 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hyd
  * Python: hydrogen.hash_keygen()
  */
 STATIC mp_obj_t hydrogen_hash_keygen(void){
-    uint8_t key_buf[hydro_hash_KEYBYTES];
+    uint8_t* key_buf = m_malloc(hydro_hash_KEYBYTES);
 
     hydro_hash_keygen(key_buf);
 
-    mp_obj_t key = mp_obj_new_bytes(key_buf, hydro_hash_KEYBYTES);
+    return hydrogen_mp_obj_bytes(key_buf, hydro_hash_KEYBYTES);
 
-    hydro_memzero(key_buf, hydro_hash_KEYBYTES);
 
-    return key;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
 
