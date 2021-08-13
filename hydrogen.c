@@ -105,9 +105,9 @@ const mp_obj_type_t hydrogen_hash_type={
  * @param key
  */
 mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
-                                        size_t n_args,
-                                        size_t n_kw,
-                                        const mp_obj_t* args){
+                                size_t n_args,
+                                size_t n_kw,
+                                const mp_obj_t* args){
     mp_arg_check_num(n_args, n_kw, 1, 2, false);
 
     // raises MemoryError
@@ -141,7 +141,7 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
  * @param obj
  */
 STATIC void hydrogen_hash_print(const mp_print_t* print,
-                                        mp_obj_t self_in, mp_print_kind_t kind){
+                                mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "hash()");
 }
@@ -237,9 +237,9 @@ const mp_obj_type_t hydrogen_sign_type={
  * @param context
  */
 mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
-                            size_t n_args,
-                            size_t n_kw,
-                            const mp_obj_t* args){
+                                size_t n_args,
+                                size_t n_kw,
+                                const mp_obj_t* args){
     mp_arg_check_num(n_args, n_kw, 1, 1, false);
 
     // raises MemoryError
@@ -260,7 +260,7 @@ mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
  * @param obj
  */
 STATIC void hydrogen_sign_print(const mp_print_t* print,
-                            mp_obj_t self_in, mp_print_kind_t kind){
+                                mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "sign()");
 }
@@ -371,6 +371,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u3
  * @param upper_bound
  */
 STATIC mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
+    // raises TypeError
     return mp_obj_new_int(hydro_random_uniform(mp_obj_get_int(upper_bound)));
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
@@ -380,6 +381,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_rando
  * @param len
  */
 STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
+    // raises TypeError
     size_t len = mp_obj_get_int(len_in);
 
     uint8_t* data = alloca(len);
