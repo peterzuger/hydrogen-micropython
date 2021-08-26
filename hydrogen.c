@@ -409,7 +409,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_bu
  * Python: hydrogen.random_ratchet()
  */
 STATIC mp_obj_t hydrogen_random_ratchet(void){
-    hydrogen_random_ratchet();
+    hydro_random_ratchet();
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_ratchet_fun_obj, hydrogen_random_ratchet);
@@ -418,7 +418,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_ratchet_fun_obj, hydrogen_rando
  * Python: hydrogen.random_reseed()
  */
 STATIC mp_obj_t hydrogen_random_reseed(void){
-    hydrogen_random_reseed();
+    hydro_random_reseed();
     return mp_const_none;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random_reseed);
