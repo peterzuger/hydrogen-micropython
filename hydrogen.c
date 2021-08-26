@@ -579,6 +579,13 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
 #endif
 #endif
 
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES),          MP_ROM_INT(hydro_hash_BYTES)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MIN),      MP_ROM_INT(hydro_hash_BYTES_MIN)                  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MAX),      MP_ROM_INT(hydro_hash_BYTES_MAX)                  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),        MP_ROM_INT(hydro_kdf_KEYBYTES)                    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),       MP_ROM_INT(hydro_kdf_BYTES_MIN)                   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),       MP_ROM_INT(hydro_kdf_BYTES_MAX)                   },
+
     { MP_OBJ_NEW_QSTR(MP_QSTR_init),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),          MP_ROM_PTR(&hydrogen_random_u32_fun_obj)          },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform),      MP_ROM_PTR(&hydrogen_random_uniform_fun_obj)      },
