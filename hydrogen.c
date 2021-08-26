@@ -144,7 +144,9 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
 
     hydro_hash_init(&self->st, context, key);
 
-    hydro_memzero(key, key_size);
+    if(key != NULL){
+        hydro_memzero(key, key_size);
+    }
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -467,7 +469,9 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
 
     hydro_hash_hash(hash, hash_size, data, size, context, key);
 
-    hydro_memzero(key, key_size);
+    if(key != NULL){
+        hydro_memzero(key, key_size);
+    }
 
     return hydrogen_mp_obj_bytes(hash, hash_size);
 }
