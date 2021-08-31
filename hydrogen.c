@@ -66,7 +66,7 @@ static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t conte
     const char* context = mp_obj_str_get_data(context_in, &size);
 
     if(size != context_size){
-        mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Context has the wrong size"));
     }
 
     return context;
@@ -138,7 +138,7 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
 
         if(key_size != hydro_hash_KEYBYTES){
             hydro_memzero(key, key_size);
-            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
         }
     }
 
@@ -195,7 +195,7 @@ STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
         size = mp_obj_get_int(args[1]);
 
         if((size < hydro_hash_BYTES_MIN) || (size > hydro_hash_BYTES_MAX)){
-            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range."));
+            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range"));
         }
     }
 
@@ -315,7 +315,7 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
 
     if(key_size != hydro_sign_SECRETKEYBYTES){
         hydro_memzero(key, key_size);
-        mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size"));
     }
 
     uint8_t* signature = m_malloc(hydro_sign_BYTES);
@@ -343,7 +343,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     hydrogen_mp_obj_get_data(signature_in, &signature, &signature_size);
 
     if(signature_size != hydro_sign_BYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Signature has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Signature has the wrong size"));
     }
 
     size_t key_size;
@@ -353,7 +353,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     hydrogen_mp_obj_get_data(key_in, &key, &key_size);
 
     if(key_size != hydro_sign_PUBLICKEYBYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Public Key has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Public Key has the wrong size"));
     }
 
     if(hydro_sign_final_verify(&self->st, signature, key) != 0){
@@ -367,7 +367,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
  */
 STATIC mp_obj_t hydrogen_init(void){
     if(hydro_init() != 0){
-        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_init() failed."));
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_init() failed"));
     }
     return mp_const_none;
 }
@@ -450,7 +450,7 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
 
         if(key_size != hydro_hash_KEYBYTES){
             hydro_memzero(key, key_size);
-            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+            mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
         }
     }
 
@@ -461,7 +461,7 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
         hash_size = mp_obj_get_int(args[3]);
 
         if((hash_size < hydro_hash_BYTES_MIN) || (hash_size > hydro_hash_BYTES_MAX)){
-            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range."));
+            mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range"));
         }
     }
 
@@ -514,7 +514,7 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
     hydrogen_mp_obj_get_data(args[1], &master_key, &master_size);
 
     if(master_size != hydro_kdf_KEYBYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Master key has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Master key has the wrong size"));
     }
 
     // raises TypeError
@@ -527,7 +527,7 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
         subkey_size = mp_obj_get_int(args[3]);
 
         if((subkey_size < hydro_kdf_BYTES_MIN) || (subkey_size > hydro_kdf_BYTES_MAX)){
-            mp_raise_ValueError(MP_ERROR_TEXT("Subkey size out of range."));
+            mp_raise_ValueError(MP_ERROR_TEXT("Subkey size out of range"));
         }
     }
 
@@ -564,7 +564,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
 
     if(key_size != hydro_secretbox_KEYBYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
     }
 
     size_t msg_size;
@@ -602,7 +602,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
 
     if(key_size != hydro_secretbox_KEYBYTES){
-        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
     }
 
     size_t ciphertext_size;
@@ -624,7 +624,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     int ret = hydro_secretbox_decrypt(msg, ciphertext, ciphertext_size, msg_id, context, key);
 
     if(ret != 0){
-        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Authentication tag invalid."));
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Authentication tag invalid"));
     }
 
     return hydrogen_mp_obj_bytes(msg, msg_size);
