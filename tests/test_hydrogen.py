@@ -92,6 +92,43 @@ class HydrogenTest(unittest.TestCase):
 
         self.assertNotEqual(pub, pri)
 
+    def test_secretbox_keygen(self):
+        # secretbox_keygen()
+
+        key = hydrogen.secretbox_keygen()
+
+        self.assertEqual(hydrogen.secretbox_KEYBYTES, len(key))
+
+    def test_secretbox_encrypt(self):
+        # secretbox_encrypt(context, key, msg[, msg_id])
+
+        key = hydrogen.secretbox_keygen()
+
+        cipher0 = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA)
+        cipher1 = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA, 1)
+
+        self.assertNotEqual(cipher0, cipher1)
+
+    def test_secretbox_decrypt(self):
+        # secretbox_decrypt(context, key, ciphertext[, msg_id])
+
+        key = hydrogen.secretbox_keygen()
+
+        cipher0 = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA)
+        cipher1 = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA, 1)
+
+        msg0 = hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher0)
+        msg1 = hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher1, 1)
+
+        self.assertEqual(msg0, msg1)
+        self.assertEqual(msg0, TEST_DATA.encode("utf-8"))
+
+        with self.assertRaises(RuntimeError) as _:
+            hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher0, 1)
+
+        with self.assertRaises(RuntimeError) as _:
+            hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher1)
+
     def test_hash(self):
         # hash(context, key=None)
         # .update(data)

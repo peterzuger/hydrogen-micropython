@@ -540,6 +540,98 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
 
 /**
+ * Python: hydrogen.secretbox_keygen()
+ */
+STATIC mp_obj_t hydrogen_secretbox_keygen(void){
+    uint8_t* key = m_malloc(hydro_secretbox_KEYBYTES);
+
+    hydro_secretbox_keygen(key);
+
+    return hydrogen_mp_obj_bytes(key, hydro_secretbox_KEYBYTES);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_secretbox_keygen);
+
+/**
+ * Python: hydrogen.secretbox_encrypt(context, key, msg[, msg_id])
+ */
+STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_secretbox_KEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+    }
+
+    size_t msg_size;
+    uint8_t* msg;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &msg, &msg_size);
+
+    uint64_t msg_id = 0;
+
+    if(n_args == 4){
+        // raises TypeError
+        msg_id = mp_obj_get_int(args[3]);
+    }
+
+    size_t ciphertext_size = hydro_secretbox_HEADERBYTES + msg_size;
+    uint8_t* ciphertext = m_malloc(ciphertext_size);
+
+    hydro_secretbox_encrypt(ciphertext, msg, msg_size, msg_id, context, key);
+
+    return hydrogen_mp_obj_bytes(ciphertext, ciphertext_size);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3, 4, hydrogen_secretbox_encrypt);
+
+/**
+ * Python: hydrogen.secretbox_decrypt(context, key, ciphertext[, msg_id])
+ */
+STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_secretbox_KEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size."));
+    }
+
+    size_t ciphertext_size;
+    uint8_t* ciphertext;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
+
+    uint64_t msg_id = 0;
+
+    if(n_args == 4){
+        // raises TypeError
+        msg_id = mp_obj_get_int(args[3]);
+    }
+
+    size_t msg_size = ciphertext_size - hydro_secretbox_HEADERBYTES;
+    uint8_t* msg = m_malloc(msg_size);
+
+    int ret = hydro_secretbox_decrypt(msg, ciphertext, ciphertext_size, msg_id, context, key);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Authentication tag invalid."));
+    }
+
+    return hydrogen_mp_obj_bytes(msg, msg_size);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
+
+/**
  * Python: hydrogen.sign_keygen()
  */
 STATIC mp_obj_t hydrogen_sign_keygen(void){
@@ -585,6 +677,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),        MP_ROM_INT(hydro_kdf_KEYBYTES)                    },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),       MP_ROM_INT(hydro_kdf_BYTES_MIN)                   },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),       MP_ROM_INT(hydro_kdf_BYTES_MAX)                   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_KEYBYTES),  MP_ROM_INT(hydro_secretbox_KEYBYTES)              },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_init),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),          MP_ROM_PTR(&hydrogen_random_u32_fun_obj)          },
@@ -596,6 +689,10 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),         MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)         },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_keygen),          MP_ROM_PTR(&hydrogen_kdf_keygen_fun_obj)          },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_derive_from_key), MP_ROM_PTR(&hydrogen_kdf_derive_from_key_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_keygen),    MP_ROM_PTR(&hydrogen_secretbox_keygen_fun_obj)    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_encrypt),   MP_ROM_PTR(&hydrogen_secretbox_encrypt_fun_obj)   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_decrypt),   MP_ROM_PTR(&hydrogen_secretbox_decrypt_fun_obj)   },
+
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),         MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)         },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash),                MP_ROM_PTR(&hydrogen_hash_type)                   },
