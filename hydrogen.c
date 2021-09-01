@@ -619,6 +619,72 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
 
 /**
+ * Python: hydrogen.secretbox_probe_create(context, key, ciphertext)
+ */
+STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_secretbox_KEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
+    }
+
+    size_t ciphertext_size;
+    uint8_t* ciphertext;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
+
+    uint8_t* probe = m_malloc(hydro_secretbox_PROBEBYTES);
+
+    hydro_secretbox_probe_create(probe, ciphertext, ciphertext_size, context, key);
+
+    return hydrogen_mp_obj_bytes(probe, hydro_secretbox_PROBEBYTES);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_obj, 3, 3, hydrogen_secretbox_probe_create);
+
+/**
+ * Python: hydrogen.secretbox_probe_verify(context, key, ciphertext, probe)
+ */
+STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
+
+    size_t key_size;
+    uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_secretbox_KEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
+    }
+
+    size_t ciphertext_size;
+    uint8_t* ciphertext;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
+
+    size_t probe_size;
+    uint8_t* probe;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[3], &probe, &probe_size);
+
+    if(probe_size != hydro_secretbox_PROBEBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Probe has the wrong size"));
+    }
+
+    return mp_obj_new_bool(!hydro_secretbox_probe_verify(probe, ciphertext, ciphertext_size, context, key));
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_verify_fun_obj, 4, 4, hydrogen_secretbox_probe_verify);
+
+/**
  * Python: hydrogen.sign_keygen()
  */
 STATIC mp_obj_t hydrogen_sign_keygen(void){
@@ -647,43 +713,45 @@ STATIC const mp_obj_tuple_t hydrogen_version_obj = {
 };
 
 STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
-    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),            MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)                 },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_version),             MP_ROM_PTR(&hydrogen_version_obj)                 },
+    { MP_OBJ_NEW_QSTR(MP_QSTR___name__),               MP_OBJ_NEW_QSTR(MP_QSTR_hydrogen)                    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_version),                MP_ROM_PTR(&hydrogen_version_obj)                    },
 
 #if HYDRO_INIT_ON_IMPORT
 #if MICROPY_MODULE_BUILTIN_INIT
-    { MP_ROM_QSTR(MP_QSTR___init__),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
+    { MP_ROM_QSTR(MP_QSTR___init__),                   MP_ROM_PTR(&hydrogen_init_fun_obj)                   },
 #else
 #error "__init__ not enabled: set MICROPY_MODULE_BUILTIN_INIT=1 to enable"
 #endif
 #endif
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES),          MP_ROM_INT(hydro_hash_BYTES)                      },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MIN),      MP_ROM_INT(hydro_hash_BYTES_MIN)                  },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MAX),      MP_ROM_INT(hydro_hash_BYTES_MAX)                  },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),        MP_ROM_INT(hydro_kdf_KEYBYTES)                    },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),       MP_ROM_INT(hydro_kdf_BYTES_MIN)                   },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),       MP_ROM_INT(hydro_kdf_BYTES_MAX)                   },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_KEYBYTES),  MP_ROM_INT(hydro_secretbox_KEYBYTES)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES),             MP_ROM_INT(hydro_hash_BYTES)                         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MIN),         MP_ROM_INT(hydro_hash_BYTES_MIN)                     },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MAX),         MP_ROM_INT(hydro_hash_BYTES_MAX)                     },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),           MP_ROM_INT(hydro_kdf_KEYBYTES)                       },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),          MP_ROM_INT(hydro_kdf_BYTES_MIN)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),          MP_ROM_INT(hydro_kdf_BYTES_MAX)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_KEYBYTES),     MP_ROM_INT(hydro_secretbox_KEYBYTES)                 },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_init),                MP_ROM_PTR(&hydrogen_init_fun_obj)                },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),          MP_ROM_PTR(&hydrogen_random_u32_fun_obj)          },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform),      MP_ROM_PTR(&hydrogen_random_uniform_fun_obj)      },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),          MP_ROM_PTR(&hydrogen_random_buf_fun_obj)          },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet),      MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj)      },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),       MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)       },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),           MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)           },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),         MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)         },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_keygen),          MP_ROM_PTR(&hydrogen_kdf_keygen_fun_obj)          },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_derive_from_key), MP_ROM_PTR(&hydrogen_kdf_derive_from_key_fun_obj) },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_keygen),    MP_ROM_PTR(&hydrogen_secretbox_keygen_fun_obj)    },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_encrypt),   MP_ROM_PTR(&hydrogen_secretbox_encrypt_fun_obj)   },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_decrypt),   MP_ROM_PTR(&hydrogen_secretbox_decrypt_fun_obj)   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_init),                   MP_ROM_PTR(&hydrogen_init_fun_obj)                   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),             MP_ROM_PTR(&hydrogen_random_u32_fun_obj)             },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform),         MP_ROM_PTR(&hydrogen_random_uniform_fun_obj)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),             MP_ROM_PTR(&hydrogen_random_buf_fun_obj)             },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet),         MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),          MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)          },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),              MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash_keygen),            MP_ROM_PTR(&hydrogen_hash_keygen_fun_obj)            },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_keygen),             MP_ROM_PTR(&hydrogen_kdf_keygen_fun_obj)             },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_derive_from_key),    MP_ROM_PTR(&hydrogen_kdf_derive_from_key_fun_obj)    },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_keygen),       MP_ROM_PTR(&hydrogen_secretbox_keygen_fun_obj)       },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_encrypt),      MP_ROM_PTR(&hydrogen_secretbox_encrypt_fun_obj)      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_decrypt),      MP_ROM_PTR(&hydrogen_secretbox_decrypt_fun_obj)      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_probe_create), MP_ROM_PTR(&hydrogen_secretbox_probe_create_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_probe_verify), MP_ROM_PTR(&hydrogen_secretbox_probe_verify_fun_obj) },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),         MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),            MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)            },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),                MP_ROM_PTR(&hydrogen_hash_type)                   },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),                MP_ROM_PTR(&hydrogen_sign_type)                   },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),                   MP_ROM_PTR(&hydrogen_hash_type)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),                   MP_ROM_PTR(&hydrogen_sign_type)                      },
 };
 
 STATIC MP_DEFINE_CONST_DICT(
