@@ -490,6 +490,10 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keyge
 
 /**
  * Python: hydrogen.kdf_derive_from_key(context, master_key, subkey_id[, subkey_len])
+ * @param context
+ * @param master_key
+ * @param subkey_id
+ * @param subkey_len
  */
 STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_kdf_CONTEXTBYTES);
@@ -540,6 +544,10 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_sec
 
 /**
  * Python: hydrogen.secretbox_encrypt(context, key, msg[, msg_id])
+ * @param context
+ * @param key
+ * @param msg
+ * @param msg_id
  */
 STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
@@ -578,6 +586,10 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3
 
 /**
  * Python: hydrogen.secretbox_decrypt(context, key, ciphertext[, msg_id])
+ * @param context
+ * @param key
+ * @param ciphertext
+ * @param msg_id
  */
 STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
@@ -620,6 +632,9 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3
 
 /**
  * Python: hydrogen.secretbox_probe_create(context, key, ciphertext)
+ * @param context
+ * @param key
+ * @param ciphertext
  */
 STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
@@ -650,6 +665,10 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_o
 
 /**
  * Python: hydrogen.secretbox_probe_verify(context, key, ciphertext, probe)
+ * @param context
+ * @param key
+ * @param ciphertext
+ * @param probe
  */
 STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
