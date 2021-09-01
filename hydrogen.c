@@ -137,16 +137,11 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
         hydrogen_mp_obj_get_data(args[1], &key, &key_size);
 
         if(key_size != hydro_hash_KEYBYTES){
-            hydro_memzero(key, key_size);
             mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
         }
     }
 
     hydro_hash_init(&self->st, context, key);
-
-    if(key != NULL){
-        hydro_memzero(key, key_size);
-    }
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -314,15 +309,12 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
     hydrogen_mp_obj_get_data(key_in, &key, &key_size);
 
     if(key_size != hydro_sign_SECRETKEYBYTES){
-        hydro_memzero(key, key_size);
         mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size"));
     }
 
     uint8_t* signature = m_malloc(hydro_sign_BYTES);
 
     hydro_sign_final_create(&self->st, signature, key);
-
-    hydro_memzero(key, key_size);
 
     return hydrogen_mp_obj_bytes(signature, hydro_sign_BYTES);
 }
@@ -449,7 +441,6 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
         hydrogen_mp_obj_get_data(args[2], &key, &key_size);
 
         if(key_size != hydro_hash_KEYBYTES){
-            hydro_memzero(key, key_size);
             mp_raise_ValueError(MP_ERROR_TEXT("Key has the wrong size"));
         }
     }
@@ -468,10 +459,6 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     uint8_t* hash = m_malloc(hash_size);
 
     hydro_hash_hash(hash, hash_size, data, size, context, key);
-
-    if(key != NULL){
-        hydro_memzero(key, key_size);
-    }
 
     return hydrogen_mp_obj_bytes(hash, hash_size);
 }
