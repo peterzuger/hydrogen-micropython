@@ -129,6 +129,30 @@ class HydrogenTest(unittest.TestCase):
         with self.assertRaises(RuntimeError) as _:
             hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher1)
 
+    def test_secretbox_probe_create(self):
+        # secretbox_probe_create(context, key, ciphertext)
+
+        key = hydrogen.secretbox_keygen()
+
+        cipher = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA)
+
+        probe = hydrogen.secretbox_probe_create(TEST_CONTEXT, key, cipher)
+
+        self.assertTrue(bool(probe))
+
+    def test_secretbox_probe_verify(self):
+        # secretbox_decrypt(context, key, ciphertext, probe)
+
+        key = hydrogen.secretbox_keygen()
+
+        cipher = hydrogen.secretbox_encrypt(TEST_CONTEXT, key, TEST_DATA)
+
+        probe = hydrogen.secretbox_probe_create(TEST_CONTEXT, key, cipher)
+
+        self.assertTrue(
+            hydrogen.secretbox_probe_verify(TEST_CONTEXT, key, cipher, probe)
+        )
+
     def test_hash(self):
         # hash(context, key=None)
         # .update(data)
