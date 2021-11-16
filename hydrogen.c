@@ -40,13 +40,13 @@
 
 #include <lib/libhydrogen/hydrogen.h>
 
-static void hydrogen_mp_obj_get_data(mp_obj_t data_p, uint8_t** data, size_t* size){
+static void hydrogen_mp_obj_get_data(mp_obj_t data_p, const uint8_t** data, size_t* size){
     if(mp_obj_is_type(data_p, &mp_type_bytearray) || mp_obj_is_type(data_p, &mp_type_memoryview)){
-        *data = (uint8_t*)((mp_obj_array_t*)data_p)->items;
+        *data = (const uint8_t*)((mp_obj_array_t*)data_p)->items;
         *size = ((mp_obj_array_t*)data_p)->len;
     }else{
         // raises TypeError
-        *data = (uint8_t*)mp_obj_str_get_data(data_p, size);
+        *data = (const uint8_t*)mp_obj_str_get_data(data_p, size);
     }
 }
 
@@ -130,7 +130,7 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
 
     size_t key_size;
-    uint8_t* key = NULL;
+    const uint8_t* key = NULL;
 
     if(n_args == 2 && args[1] != mp_const_none){
         // raises TypeError
@@ -165,7 +165,7 @@ STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
-    uint8_t* data;
+    const uint8_t* data;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(data_in, &data, &size);
@@ -284,7 +284,7 @@ STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
-    uint8_t* data;
+    const uint8_t* data;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(data_in, &data, &size);
@@ -303,7 +303,7 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(key_in, &key, &key_size);
@@ -329,7 +329,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t signature_size;
-    uint8_t* signature;
+    const uint8_t* signature;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(signature_in, &signature, &signature_size);
@@ -339,7 +339,7 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
     }
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(key_in, &key, &key_size);
@@ -428,13 +428,13 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
 
     size_t size;
-    uint8_t* data;
+    const uint8_t* data;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &data, &size);
 
     size_t key_size;
-    uint8_t* key = NULL;
+    const uint8_t* key = NULL;
 
     if(n_args >= 3 && args[2] != mp_const_none){
         // raises TypeError
@@ -499,7 +499,7 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_kdf_CONTEXTBYTES);
 
     size_t master_size;
-    uint8_t* master_key;
+    const uint8_t* master_key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &master_key, &master_size);
@@ -553,7 +553,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
@@ -563,7 +563,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     }
 
     size_t msg_size;
-    uint8_t* msg;
+    const uint8_t* msg;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[2], &msg, &msg_size);
@@ -595,7 +595,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
@@ -605,7 +605,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     }
 
     size_t ciphertext_size;
-    uint8_t* ciphertext;
+    const uint8_t* ciphertext;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
@@ -640,7 +640,7 @@ STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *a
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
@@ -650,7 +650,7 @@ STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *a
     }
 
     size_t ciphertext_size;
-    uint8_t* ciphertext;
+    const uint8_t* ciphertext;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
@@ -674,7 +674,7 @@ STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *a
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
-    uint8_t* key;
+    const uint8_t* key;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
@@ -684,13 +684,13 @@ STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *a
     }
 
     size_t ciphertext_size;
-    uint8_t* ciphertext;
+    const uint8_t* ciphertext;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
 
     size_t probe_size;
-    uint8_t* probe;
+    const uint8_t* probe;
 
     // raises TypeError
     hydrogen_mp_obj_get_data(args[3], &probe, &probe_size);
