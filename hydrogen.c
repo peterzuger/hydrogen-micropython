@@ -50,15 +50,6 @@ static void hydrogen_mp_obj_get_data(mp_obj_t data_p, const uint8_t** data, size
     }
 }
 
-mp_obj_t hydrogen_mp_obj_bytes(const uint8_t* data, size_t len){
-    mp_obj_str_t *o = m_new_obj(mp_obj_str_t);
-    o->base.type = &mp_type_bytes;
-    o->data = data;
-    o->len = len;
-    o->hash = qstr_compute_hash(data, len);
-    return MP_OBJ_FROM_PTR(o);
-}
-
 static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t context_size){
     size_t size;
 
@@ -194,11 +185,12 @@ STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
         }
     }
 
-    uint8_t* hash = m_malloc(size);
+    vstr_t vstr;
+    vstr_init_len(&vstr, size);
 
-    hydro_hash_final(&self->st, hash, size);
+    hydro_hash_final(&self->st, (uint8_t*)vstr.buf, size);
 
-    return hydrogen_mp_obj_bytes(hash, size);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 
 
@@ -312,11 +304,12 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
         mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size"));
     }
 
-    uint8_t* signature = m_malloc(hydro_sign_BYTES);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_sign_BYTES);
 
-    hydro_sign_final_create(&self->st, signature, key);
+    hydro_sign_final_create(&self->st, (uint8_t*)vstr.buf, key);
 
-    return hydrogen_mp_obj_bytes(signature, hydro_sign_BYTES);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 
 /**
@@ -392,11 +385,12 @@ STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
     // raises TypeError
     size_t len = mp_obj_get_int(len_in);
 
-    uint8_t* data = m_malloc(len);
+    vstr_t vstr;
+    vstr_init_len(&vstr, len);
 
-    hydro_random_buf(data, len);
+    hydro_random_buf(vstr.buf, len);
 
-    return hydrogen_mp_obj_bytes(data, len);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
 
@@ -457,11 +451,12 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
         }
     }
 
-    uint8_t* hash = m_malloc(hash_size);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hash_size);
 
-    hydro_hash_hash(hash, hash_size, data, size, context, key);
+    hydro_hash_hash((uint8_t*)vstr.buf, hash_size, data, size, context, key);
 
-    return hydrogen_mp_obj_bytes(hash, hash_size);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
 
@@ -469,11 +464,12 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hyd
  * Python: hydrogen.hash_keygen()
  */
 STATIC mp_obj_t hydrogen_hash_keygen(void){
-    uint8_t* key_buf = m_malloc(hydro_hash_KEYBYTES);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_hash_KEYBYTES);
 
-    hydro_hash_keygen(key_buf);
+    hydro_hash_keygen((uint8_t*)vstr.buf);
 
-    return hydrogen_mp_obj_bytes(key_buf, hydro_hash_KEYBYTES);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
 
@@ -481,11 +477,12 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_key
  * Python: hydrogen.kdf_keygen()
  */
 STATIC mp_obj_t hydrogen_kdf_keygen(void){
-    uint8_t* key_buf = m_malloc(hydro_kdf_KEYBYTES);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_kdf_KEYBYTES);
 
-    hydro_kdf_keygen(key_buf);
+    hydro_kdf_keygen((uint8_t*)vstr.buf);
 
-    return hydrogen_mp_obj_bytes(key_buf, hydro_kdf_KEYBYTES);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keygen);
 
@@ -523,11 +520,12 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
         }
     }
 
-    uint8_t* subkey_buf = m_malloc(subkey_size);
+    vstr_t vstr;
+    vstr_init_len(&vstr, subkey_size);
 
-    hydro_kdf_derive_from_key(subkey_buf, subkey_size, subkey_id, context, master_key);
+    hydro_kdf_derive_from_key((uint8_t*)vstr.buf, subkey_size, subkey_id, context, master_key);
 
-    return hydrogen_mp_obj_bytes(subkey_buf, subkey_size);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
 
@@ -535,11 +533,12 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj,
  * Python: hydrogen.secretbox_keygen()
  */
 STATIC mp_obj_t hydrogen_secretbox_keygen(void){
-    uint8_t* key = m_malloc(hydro_secretbox_KEYBYTES);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_secretbox_KEYBYTES);
 
-    hydro_secretbox_keygen(key);
+    hydro_secretbox_keygen((uint8_t*)vstr.buf);
 
-    return hydrogen_mp_obj_bytes(key, hydro_secretbox_KEYBYTES);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_secretbox_keygen);
 
@@ -577,11 +576,12 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     }
 
     size_t ciphertext_size = hydro_secretbox_HEADERBYTES + msg_size;
-    uint8_t* ciphertext = m_malloc(ciphertext_size);
+    vstr_t vstr;
+    vstr_init_len(&vstr, ciphertext_size);
 
-    hydro_secretbox_encrypt(ciphertext, msg, msg_size, msg_id, context, key);
+    hydro_secretbox_encrypt((uint8_t*)vstr.buf, msg, msg_size, msg_id, context, key);
 
-    return hydrogen_mp_obj_bytes(ciphertext, ciphertext_size);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3, 4, hydrogen_secretbox_encrypt);
 
@@ -619,15 +619,18 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     }
 
     size_t msg_size = ciphertext_size - hydro_secretbox_HEADERBYTES;
-    uint8_t* msg = m_malloc(msg_size);
 
-    int ret = hydro_secretbox_decrypt(msg, ciphertext, ciphertext_size, msg_id, context, key);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, msg_size);
+
+    int ret = hydro_secretbox_decrypt((uint8_t*)vstr.buf, ciphertext, ciphertext_size, msg_id, context, key);
 
     if(ret != 0){
         mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Authentication tag invalid"));
     }
 
-    return hydrogen_mp_obj_bytes(msg, msg_size);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
 
@@ -656,11 +659,12 @@ STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *a
     // raises TypeError
     hydrogen_mp_obj_get_data(args[2], &ciphertext, &ciphertext_size);
 
-    uint8_t* probe = m_malloc(hydro_secretbox_PROBEBYTES);
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_secretbox_PROBEBYTES);
 
-    hydro_secretbox_probe_create(probe, ciphertext, ciphertext_size, context, key);
+    hydro_secretbox_probe_create((uint8_t*)vstr.buf, ciphertext, ciphertext_size, context, key);
 
-    return hydrogen_mp_obj_bytes(probe, hydro_secretbox_PROBEBYTES);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_obj, 3, 3, hydrogen_secretbox_probe_create);
 
