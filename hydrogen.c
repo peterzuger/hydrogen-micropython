@@ -348,10 +348,11 @@ STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_
         mp_raise_ValueError(MP_ERROR_TEXT("Public Key has the wrong size"));
     }
 
-    if(hydro_sign_final_verify(&self->st, signature, key) != 0){
-        return mp_const_false;
+    // 0 indicates success
+    if(hydro_sign_final_verify(&self->st, signature, key) == 0){
+        return mp_const_true;
     }
-    return mp_const_true;
+    return mp_const_false;
 }
 
 /**
@@ -699,7 +700,11 @@ STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *a
         mp_raise_ValueError(MP_ERROR_TEXT("Probe has the wrong size"));
     }
 
-    return mp_obj_new_bool(!hydro_secretbox_probe_verify(probe, ciphertext, ciphertext_size, context, key));
+    // 0 indicates success
+    if(hydro_secretbox_probe_verify(probe, ciphertext, ciphertext_size, context, key) == 0){
+        return mp_const_true;
+    }
+    return mp_const_false;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_verify_fun_obj, 4, 4, hydrogen_secretbox_probe_verify);
 
