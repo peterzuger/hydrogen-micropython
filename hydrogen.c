@@ -63,59 +63,59 @@ static const char* hydrogen_mp_obj_get_context(mp_obj_t context_in, size_t conte
     return context;
 }
 
-typedef struct _hydrogen_hash_obj_t{
+typedef struct _hydrogen_Hash_obj_t{
     // base represents some basic information, like type
     mp_obj_base_t base;
 
     hydro_hash_state st;
-}hydrogen_hash_obj_t;
+}hydrogen_Hash_obj_t;
 
 
-mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
-STATIC void hydrogen_hash_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
-STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in);
-STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args);
+mp_obj_t hydrogen_Hash_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
+STATIC void hydrogen_Hash_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+STATIC mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in);
+STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args);
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_hash_update_fun_obj, hydrogen_hash_update);
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_final_fun_obj, 1, 2, hydrogen_hash_final);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Hash_update_fun_obj, hydrogen_Hash_update);
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_Hash_final_fun_obj, 1, 2, hydrogen_Hash_final);
 
 
-STATIC const mp_rom_map_elem_t hydrogen_hash_locals_dict_table[]={
+STATIC const mp_rom_map_elem_t hydrogen_Hash_locals_dict_table[]={
     // class methods
-    { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hydrogen_hash_update_fun_obj) },
-    { MP_ROM_QSTR(MP_QSTR_final),  MP_ROM_PTR(&hydrogen_hash_final_fun_obj)  },
+    { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hydrogen_Hash_update_fun_obj) },
+    { MP_ROM_QSTR(MP_QSTR_final),  MP_ROM_PTR(&hydrogen_Hash_final_fun_obj)  },
 };
-STATIC MP_DEFINE_CONST_DICT(hydrogen_hash_locals_dict,hydrogen_hash_locals_dict_table);
+STATIC MP_DEFINE_CONST_DICT(hydrogen_Hash_locals_dict,hydrogen_Hash_locals_dict_table);
 
 
-const mp_obj_type_t hydrogen_hash_type={
+const mp_obj_type_t hydrogen_Hash_type={
     // "inherit" the type "type"
     { &mp_type_type },
     // give it a name
-    .name = MP_QSTR_hash,
+    .name = MP_QSTR_Hash,
     // give it a print-function
-    .print = hydrogen_hash_print,
+    .print = hydrogen_Hash_print,
     // give it a constructor
-    .make_new = hydrogen_hash_make_new,
+    .make_new = hydrogen_Hash_make_new,
     // and the global members
-    .locals_dict = (mp_obj_dict_t*)&hydrogen_hash_locals_dict,
+    .locals_dict = (mp_obj_dict_t*)&hydrogen_Hash_locals_dict,
 };
 
 /**
- * Python: hydrogen.hash(context, key=None)
+ * Python: hydrogen.Hash(context, key=None)
  * @param context
  * @param key
  */
-mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
+mp_obj_t hydrogen_Hash_make_new(const mp_obj_type_t* type,
                                 size_t n_args,
                                 size_t n_kw,
                                 const mp_obj_t* args){
     mp_arg_check_num(n_args, n_kw, 1, 2, false);
 
     // raises MemoryError
-    hydrogen_hash_obj_t* self = m_new_obj(hydrogen_hash_obj_t);
+    hydrogen_Hash_obj_t* self = m_new_obj(hydrogen_Hash_obj_t);
 
-    self->base.type = &hydrogen_hash_type;
+    self->base.type = &hydrogen_Hash_type;
 
     // raises TypeError, ValueError
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
@@ -138,22 +138,22 @@ mp_obj_t hydrogen_hash_make_new(const mp_obj_type_t* type,
 }
 
 /**
- * Python: print(hydrogen.hash(context, key))
+ * Python: print(hydrogen.Hash(context, key))
  * @param obj
  */
-STATIC void hydrogen_hash_print(const mp_print_t* print,
+STATIC void hydrogen_Hash_print(const mp_print_t* print,
                                 mp_obj_t self_in, mp_print_kind_t kind){
-    //hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(print, "hash()");
+    //hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
+    mp_printf(print, "Hash()");
 }
 
 /**
- * Python: hydrogen.hash.update(self, data)
+ * Python: hydrogen.Hash.update(self, data)
  * @param self
  * @param data
  */
-STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
-    hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
+STATIC mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in){
+    hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
     const uint8_t* data;
@@ -167,12 +167,12 @@ STATIC mp_obj_t hydrogen_hash_update(mp_obj_t self_in, mp_obj_t data_in){
 }
 
 /**
- * Python: hydrogen.hash.final(self[, hash_size])
+ * Python: hydrogen.Hash.final(self[, hash_size])
  * @param self
  * @param hash_size
  */
-STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
-    hydrogen_hash_obj_t* self = MP_OBJ_TO_PTR(args[0]);
+STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
+    hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(args[0]);
 
     size_t size = hydro_hash_BYTES;
 
@@ -194,60 +194,60 @@ STATIC mp_obj_t hydrogen_hash_final(size_t n_args, const mp_obj_t* args){
 }
 
 
-typedef struct _hydrogen_sign_obj_t{
+typedef struct _hydrogen_Sign_obj_t{
     // base represents some basic information, like type
     mp_obj_base_t base;
 
     hydro_sign_state st;
-}hydrogen_sign_obj_t;
+}hydrogen_Sign_obj_t;
 
 
-mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
-STATIC void hydrogen_sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
-STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in);
-STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
-STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in);
+mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
+STATIC void hydrogen_Sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in);
+STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
+STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in);
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_sign_update_fun_obj, hydrogen_sign_update);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_sign_final_create_fun_obj, hydrogen_sign_final_create);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_final_verify_fun_obj, hydrogen_sign_final_verify);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_update_fun_obj, hydrogen_Sign_update);
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_final_create_fun_obj, hydrogen_Sign_final_create);
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_Sign_final_verify_fun_obj, hydrogen_Sign_final_verify);
 
-STATIC const mp_rom_map_elem_t hydrogen_sign_locals_dict_table[]={
+STATIC const mp_rom_map_elem_t hydrogen_Sign_locals_dict_table[]={
     // class methods
-    { MP_ROM_QSTR(MP_QSTR_update),       MP_ROM_PTR(&hydrogen_sign_update_fun_obj)       },
-    { MP_ROM_QSTR(MP_QSTR_final_create), MP_ROM_PTR(&hydrogen_sign_final_create_fun_obj) },
-    { MP_ROM_QSTR(MP_QSTR_final_verify), MP_ROM_PTR(&hydrogen_sign_final_verify_fun_obj) },
+    { MP_ROM_QSTR(MP_QSTR_update),       MP_ROM_PTR(&hydrogen_Sign_update_fun_obj)       },
+    { MP_ROM_QSTR(MP_QSTR_final_create), MP_ROM_PTR(&hydrogen_Sign_final_create_fun_obj) },
+    { MP_ROM_QSTR(MP_QSTR_final_verify), MP_ROM_PTR(&hydrogen_Sign_final_verify_fun_obj) },
 };
-STATIC MP_DEFINE_CONST_DICT(hydrogen_sign_locals_dict,hydrogen_sign_locals_dict_table);
+STATIC MP_DEFINE_CONST_DICT(hydrogen_Sign_locals_dict,hydrogen_Sign_locals_dict_table);
 
 
-const mp_obj_type_t hydrogen_sign_type={
+const mp_obj_type_t hydrogen_Sign_type={
     // "inherit" the type "type"
     { &mp_type_type },
     // give it a name
-    .name = MP_QSTR_sign,
+    .name = MP_QSTR_Sign,
     // give it a print-function
-    .print = hydrogen_sign_print,
+    .print = hydrogen_Sign_print,
     // give it a constructor
-    .make_new = hydrogen_sign_make_new,
+    .make_new = hydrogen_Sign_make_new,
     // and the global members
-    .locals_dict = (mp_obj_dict_t*)&hydrogen_sign_locals_dict,
+    .locals_dict = (mp_obj_dict_t*)&hydrogen_Sign_locals_dict,
 };
 
 /**
- * Python: hydrogen.sign(context)
+ * Python: hydrogen.Sign(context)
  * @param context
  */
-mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
+mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type,
                                 size_t n_args,
                                 size_t n_kw,
                                 const mp_obj_t* args){
     mp_arg_check_num(n_args, n_kw, 1, 1, false);
 
     // raises MemoryError
-    hydrogen_sign_obj_t* self = m_new_obj(hydrogen_sign_obj_t);
+    hydrogen_Sign_obj_t* self = m_new_obj(hydrogen_Sign_obj_t);
 
-    self->base.type = &hydrogen_sign_type;
+    self->base.type = &hydrogen_Sign_type;
 
     // raises TypeError, ValueError
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_sign_CONTEXTBYTES);
@@ -258,22 +258,22 @@ mp_obj_t hydrogen_sign_make_new(const mp_obj_type_t* type,
 }
 
 /**
- * Python: print(hydrogen.sign(context))
+ * Python: print(hydrogen.Sign(context))
  * @param obj
  */
-STATIC void hydrogen_sign_print(const mp_print_t* print,
+STATIC void hydrogen_Sign_print(const mp_print_t* print,
                                 mp_obj_t self_in, mp_print_kind_t kind){
-    //hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
-    mp_printf(print, "sign()");
+    //hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+    mp_printf(print, "Sign()");
 }
 
 /**
- * Python: hydrogen.sign.update(self, data)
+ * Python: hydrogen.Sign.update(self, data)
  * @param self
  * @param data
  */
-STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
-    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in){
+    hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
     const uint8_t* data;
@@ -287,12 +287,12 @@ STATIC mp_obj_t hydrogen_sign_update(mp_obj_t self_in, mp_obj_t data_in){
 }
 
 /**
- * Python: hydrogen.sign.final_create(self, key)
+ * Python: hydrogen.Sign.final_create(self, key)
  * @param self
  * @param key
  */
-STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
-    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
+    hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t key_size;
     const uint8_t* key;
@@ -313,13 +313,13 @@ STATIC mp_obj_t hydrogen_sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
 }
 
 /**
- * Python: hydrogen.sign.final_verify(self, signature, key)
+ * Python: hydrogen.Sign.final_verify(self, signature, key)
  * @param self
  * @param signature
  * @param key
  */
-STATIC mp_obj_t hydrogen_sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in){
-    hydrogen_sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
+STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in){
+    hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t signature_size;
     const uint8_t* signature;
@@ -778,8 +778,8 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),            MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)            },
 
-    { MP_OBJ_NEW_QSTR(MP_QSTR_hash),                   MP_ROM_PTR(&hydrogen_hash_type)                      },
-    { MP_OBJ_NEW_QSTR(MP_QSTR_sign),                   MP_ROM_PTR(&hydrogen_sign_type)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_Hash),                   MP_ROM_PTR(&hydrogen_Hash_type)                      },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_Sign),                   MP_ROM_PTR(&hydrogen_Sign_type)                      },
 };
 
 STATIC MP_DEFINE_CONST_DICT(

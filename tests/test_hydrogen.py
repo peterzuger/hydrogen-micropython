@@ -171,13 +171,13 @@ class HydrogenTest(unittest.TestCase):
         self.assertTrue(verified)
 
     def test_hash(self):
-        # hash(context, key=None)
+        # Hash(context, key=None)
         # .update(data)
         # .final([hash_size])
 
         # no key
 
-        h = hydrogen.hash(TEST_CONTEXT, None)
+        h = hydrogen.Hash(TEST_CONTEXT, None)
         for _ in range(256):
             h.update(TEST_DATA)
         f = h.final()
@@ -189,7 +189,7 @@ class HydrogenTest(unittest.TestCase):
 
         key = hydrogen.hash_keygen()
 
-        h = hydrogen.hash(TEST_CONTEXT, key)
+        h = hydrogen.Hash(TEST_CONTEXT, key)
         for _ in range(256):
             h.update(TEST_DATA)
         f = h.final()
@@ -197,22 +197,22 @@ class HydrogenTest(unittest.TestCase):
         self.assertEqual(hydrogen.hash_BYTES, len(f))
         self.assertIsInstance(f, bytes)
 
-    def test_sign(self):
-        # sign(context)
+    def test_Sign(self):
+        # Sign(context)
         # .update(data)
         # .final_create(key)
         # .final_verify(signature, key)
 
         pub, pri = hydrogen.sign_keygen()
 
-        s = hydrogen.sign(TEST_CONTEXT)
+        s = hydrogen.Sign(TEST_CONTEXT)
         for _ in range(256):
             s.update(TEST_DATA)
         signature = s.final_create(pri)
 
         self.assertIsInstance(signature, bytes)
 
-        s = hydrogen.sign(TEST_CONTEXT)
+        s = hydrogen.Sign(TEST_CONTEXT)
         for _ in range(256):
             s.update(TEST_DATA)
         verified = s.final_verify(signature, pub)
