@@ -792,6 +792,6 @@ const mp_obj_module_t mp_module_hydrogen = {
     .globals = (mp_obj_dict_t*)&mp_module_hydrogen_globals,
 };
 
-MP_REGISTER_MODULE(MP_QSTR_hydrogen, mp_module_hydrogen, MODULE_HYDROGEN_ENABLED);
+MP_REGISTER_MODULE(MP_QSTR_hydrogen, mp_module_hydrogen);
 
 #endif /* defined(MODULE_HYDROGEN_ENABLED) && MODULE_HYDROGEN_ENABLED == 1 */
