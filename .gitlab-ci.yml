@@ -38,7 +38,7 @@ mpy-cross:
 unix:
   stage: build
   script:
-    - make -C micropython/ports/unix USER_C_MODULES=$CMODULES CFLAGS_EXTRA="-DMODULE_HYDROGEN_ENABLED=1"
+    - make -C micropython/ports/unix USER_C_MODULES=$CMODULES CFLAGS_EXTRA="-DMODULE_HYDROGEN_ENABLED=1" FROZEN_MANIFEST=$CMODULES/hydrogen/tests/manifest.py
   artifacts:
     expose_as: 'micropython'
     paths:
