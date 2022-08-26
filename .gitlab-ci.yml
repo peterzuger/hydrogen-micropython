@@ -8,8 +8,7 @@ stages:
 
 # global variables
 variables:
-  GIT_CLONE_PATH: $CI_BUILDS_DIR/c-modules/hydrogen
-  CMODULES: $CI_BUILDS_DIR/c-modules
+  CMODULES: $CI_PROJECT_DIR/..
 
 fetch-micropython:
   stage: prepare
@@ -31,14 +30,14 @@ mpy-cross:
   artifacts:
     expose_as: 'mpy-cross'
     paths:
-      - micropython/mpy-cross/mpy-cross
+      - micropython/mpy-cross/build/mpy-cross
   dependencies:
     - fetch-micropython
 
 unix:
   stage: build
   script:
-    - make -C micropython/ports/unix USER_C_MODULES=$CMODULES CFLAGS_EXTRA="-DMODULE_HYDROGEN_ENABLED=1" FROZEN_MANIFEST=$CMODULES/hydrogen/tests/manifest.py
+    - make -C micropython/ports/unix USER_C_MODULES=$CMODULES CFLAGS_EXTRA="-DMODULE_HYDROGEN_ENABLED=1" FROZEN_MANIFEST=$CMODULES/hydrogen-micropython/tests/manifest.py
   artifacts:
     expose_as: 'micropython'
     paths:
@@ -58,6 +57,6 @@ stm32:
 unix-test:
   stage: test
   script:
-    - micropython/ports/unix/build-standard/micropython -m unittest $CMODULES/hydrogen/tests/test_hydrogen
+    - micropython/ports/unix/build-standard/micropython -m unittest tests/test_hydrogen
   dependencies:
     - unix
