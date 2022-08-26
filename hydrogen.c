@@ -190,7 +190,7 @@ STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
 
     hydro_hash_final(&self->st, (uint8_t*)vstr.buf, size);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
 
@@ -309,7 +309,7 @@ STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
 
     hydro_sign_final_create(&self->st, (uint8_t*)vstr.buf, key);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 
 /**
@@ -390,7 +390,7 @@ STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
 
     hydro_random_buf(vstr.buf, len);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
 
@@ -456,7 +456,7 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
 
     hydro_hash_hash((uint8_t*)vstr.buf, hash_size, data, size, context, key);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
 
@@ -469,7 +469,7 @@ STATIC mp_obj_t hydrogen_hash_keygen(void){
 
     hydro_hash_keygen((uint8_t*)vstr.buf);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
 
@@ -482,7 +482,7 @@ STATIC mp_obj_t hydrogen_kdf_keygen(void){
 
     hydro_kdf_keygen((uint8_t*)vstr.buf);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keygen);
 
@@ -525,7 +525,7 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
 
     hydro_kdf_derive_from_key((uint8_t*)vstr.buf, subkey_size, subkey_id, context, master_key);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
 
@@ -538,7 +538,7 @@ STATIC mp_obj_t hydrogen_secretbox_keygen(void){
 
     hydro_secretbox_keygen((uint8_t*)vstr.buf);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_secretbox_keygen);
 
@@ -581,7 +581,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
 
     hydro_secretbox_encrypt((uint8_t*)vstr.buf, msg, msg_size, msg_id, context, key);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3, 4, hydrogen_secretbox_encrypt);
 
@@ -630,7 +630,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
         mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("Authentication tag invalid"));
     }
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
 
@@ -664,7 +664,7 @@ STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *a
 
     hydro_secretbox_probe_create((uint8_t*)vstr.buf, ciphertext, ciphertext_size, context, key);
 
-    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+    return mp_obj_new_bytes_from_vstr(&vstr);
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_obj, 3, 3, hydrogen_secretbox_probe_create);
 
