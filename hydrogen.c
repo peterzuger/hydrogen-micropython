@@ -749,8 +749,8 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___init__),                   MP_ROM_PTR(&hydrogen_init_fun_obj)                   },
 #else
 #error "__init__ not enabled: set MICROPY_MODULE_BUILTIN_INIT=1 to enable"
-#endif
-#endif
+#endif /* MICROPY_MODULE_BUILTIN_INIT */
+#endif /* HYDRO_INIT_ON_IMPORT */
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES),             MP_ROM_INT(hydro_hash_BYTES)                         },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MIN),         MP_ROM_INT(hydro_hash_BYTES_MIN)                     },
