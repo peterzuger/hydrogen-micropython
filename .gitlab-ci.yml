@@ -42,7 +42,7 @@ unix:
   artifacts:
     expose_as: 'micropython'
     paths:
-      - micropython/ports/unix/micropython
+      - micropython/ports/unix/build-standard/micropython
   dependencies:
     - mpy-cross
     - fetch-micropython
