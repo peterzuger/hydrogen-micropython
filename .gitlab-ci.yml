@@ -54,3 +54,10 @@ stm32:
   dependencies:
     - mpy-cross
     - fetch-micropython
+
+unix-test:
+  stage: test
+  script:
+    - micropython/ports/unix/build-standard/micropython -m unittest $CMODULES/hydrogen/tests/test_hydrogen
+  dependencies:
+    - unix
