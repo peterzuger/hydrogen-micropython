@@ -88,18 +88,14 @@ STATIC const mp_rom_map_elem_t hydrogen_Hash_locals_dict_table[]={
 STATIC MP_DEFINE_CONST_DICT(hydrogen_Hash_locals_dict,hydrogen_Hash_locals_dict_table);
 
 
-const mp_obj_type_t hydrogen_Hash_type={
-    // "inherit" the type "type"
-    { &mp_type_type },
-    // give it a name
-    .name = MP_QSTR_Hash,
-    // give it a print-function
-    .print = hydrogen_Hash_print,
-    // give it a constructor
-    .make_new = hydrogen_Hash_make_new,
-    // and the global members
-    .locals_dict = (mp_obj_dict_t*)&hydrogen_Hash_locals_dict,
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    hydrogen_Hash_type,
+    MP_QSTR_Hash,
+    MP_TYPE_FLAG_NONE,
+    print, hydrogen_Hash_print,
+    make_new, hydrogen_Hash_make_new,
+    locals_dict, (mp_obj_dict_t*)&hydrogen_Hash_locals_dict
+    );
 
 /**
  * Python: hydrogen.Hash(context, key=None)
@@ -221,18 +217,14 @@ STATIC const mp_rom_map_elem_t hydrogen_Sign_locals_dict_table[]={
 STATIC MP_DEFINE_CONST_DICT(hydrogen_Sign_locals_dict,hydrogen_Sign_locals_dict_table);
 
 
-const mp_obj_type_t hydrogen_Sign_type={
-    // "inherit" the type "type"
-    { &mp_type_type },
-    // give it a name
-    .name = MP_QSTR_Sign,
-    // give it a print-function
-    .print = hydrogen_Sign_print,
-    // give it a constructor
-    .make_new = hydrogen_Sign_make_new,
-    // and the global members
-    .locals_dict = (mp_obj_dict_t*)&hydrogen_Sign_locals_dict,
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    hydrogen_Sign_type,
+    MP_QSTR_Sign,
+    MP_TYPE_FLAG_NONE,
+    print, hydrogen_Sign_print,
+    make_new, hydrogen_Sign_make_new,
+    locals_dict, &hydrogen_Sign_locals_dict
+    );
 
 /**
  * Python: hydrogen.Sign(context)
