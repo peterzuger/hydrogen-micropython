@@ -3,8 +3,7 @@
 // verifying a signature, but a correct implementation is provided anyway.
 
 #include "py/mphal.h"
-#include "rng.h"
 
 static inline uint32_t HAL_RNG_GetRandomNumber(void) {
-    return rng_get();
+    return MICROPY_PY_URANDOM_SEED_INIT_FUNC;
 }
