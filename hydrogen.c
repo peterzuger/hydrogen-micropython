@@ -94,7 +94,7 @@ MP_DEFINE_CONST_OBJ_TYPE(
     MP_TYPE_FLAG_NONE,
     print, hydrogen_Hash_print,
     make_new, hydrogen_Hash_make_new,
-    locals_dict, (mp_obj_dict_t*)&hydrogen_Hash_locals_dict
+    locals_dict, &hydrogen_Hash_locals_dict
     );
 
 /**
