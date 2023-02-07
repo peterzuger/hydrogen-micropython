@@ -202,6 +202,27 @@ class HydrogenTest(unittest.TestCase):
         self.assertEqual(pub3, pub)
         self.assertEqual(pri3, pri)
 
+    def test_sign_create(self):
+        # hydrogen.sign_create(context, secretkey, data)
+
+        _, pri = hydrogen.sign_keygen()
+
+        signature = hydrogen.sign_create(TEST_CONTEXT, pri, TEST_DATA)
+
+        self.assertIsInstance(signature, bytes)
+        self.assertEqual(hydrogen.sign_BYTES, len(signature))
+
+    def test_sign_verify(self):
+        # hydrogen.sign_verify(context, publickey, data, signature)
+
+        pub, pri = hydrogen.sign_keygen()
+
+        signature = hydrogen.sign_create(TEST_CONTEXT, pri, TEST_DATA)
+
+        verified = hydrogen.sign_verify(TEST_CONTEXT, pub, TEST_DATA, signature)
+
+        self.assertIsInstance(verified, bool)
+        self.assertTrue(verified)
 
     def test_secretbox_keygen(self):
         # hydrogen.secretbox_keygen()
@@ -314,6 +335,7 @@ class HydrogenTest(unittest.TestCase):
         signature = s.final_create(pri)
 
         self.assertIsInstance(signature, bytes)
+        self.assertEqual(hydrogen.sign_BYTES, len(signature))
 
         s = hydrogen.Sign(TEST_CONTEXT)
         for _ in range(256):

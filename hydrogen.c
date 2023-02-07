@@ -778,6 +778,87 @@ STATIC mp_obj_t hydrogen_sign_keygen_deterministic(mp_obj_t seed_in){
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_sign_keygen_deterministic_fun_obj, hydrogen_sign_keygen_deterministic);
 
+/**
+ * Python: hydrogen.sign_create(context, secretkey, data)
+ * @param context
+ * @param secretkey
+ * @param data
+ */
+STATIC mp_obj_t hydrogen_sign_create(mp_obj_t context_in, mp_obj_t secretkey_in, mp_obj_t message_in){
+    const char* context = hydrogen_mp_obj_get_context(context_in, hydro_sign_CONTEXTBYTES);
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(secretkey_in, &key, &key_size);
+
+    if(key_size != hydro_sign_SECRETKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Secret Key has the wrong size"));
+    }
+
+    size_t data_size;
+    const uint8_t* data;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(message_in, &data, &data_size);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_sign_BYTES);
+
+    int ret = hydro_sign_create((uint8_t*)vstr.buf, data, data_size, context, key);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_sign_create() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_create_fun_obj, hydrogen_sign_create);
+
+/**
+ * Python: hydrogen.sign_verify(context, publickey, data, signature)
+ * @param context
+ * @param publickey
+ * @param data
+ * @param signature
+ */
+STATIC mp_obj_t hydrogen_sign_verify(size_t n_args, const mp_obj_t* args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_sign_CONTEXTBYTES);
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_sign_PUBLICKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Public Key has the wrong size"));
+    }
+
+    size_t signature_size;
+    const uint8_t* signature;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[3], &signature, &signature_size);
+
+    if(signature_size != hydro_sign_BYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Signature has the wrong size"));
+    }
+
+    size_t data_size;
+    const uint8_t* data;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &data, &data_size);
+
+    if(hydro_sign_verify(signature, data, data_size, context, key) == 0){
+        return mp_const_true;
+    }
+    return mp_const_false;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_sign_verify_fun_obj, 4, 4, hydrogen_sign_verify);
+
 
 STATIC const mp_obj_tuple_t hydrogen_version_obj = {
     {&mp_type_tuple},
@@ -808,6 +889,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),              MP_ROM_INT(hydro_kdf_KEYBYTES)                         },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),             MP_ROM_INT(hydro_kdf_BYTES_MAX)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),             MP_ROM_INT(hydro_kdf_BYTES_MIN)                        },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_BYTES),                MP_ROM_INT(hydro_sign_BYTES)                           },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_SEEDBYTES),            MP_ROM_INT(hydro_sign_SEEDBYTES)                       },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_SECRETKEYBYTES),       MP_ROM_INT(hydro_sign_SECRETKEYBYTES)                  },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_PUBLICKEYBYTES),       MP_ROM_INT(hydro_sign_PUBLICKEYBYTES)                  },
@@ -831,6 +913,8 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_probe_verify),    MP_ROM_PTR(&hydrogen_secretbox_probe_verify_fun_obj)   },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),               MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)              },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen_deterministic), MP_ROM_PTR(&hydrogen_sign_keygen_deterministic_fun_obj)},
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_create),               MP_ROM_PTR(&hydrogen_sign_create_fun_obj)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_verify),               MP_ROM_PTR(&hydrogen_sign_verify_fun_obj)              },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_Hash),                      MP_ROM_PTR(&hydrogen_Hash_type)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_Sign),                      MP_ROM_PTR(&hydrogen_Sign_type)                        },
