@@ -174,7 +174,7 @@ STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
 
     if(n_args == 2){
         // raises TypeError
-        size = mp_obj_get_int(args[1]);
+        size = mp_obj_int_get_uint_checked(args[1]);
 
         if((size < hydro_hash_BYTES_MIN) || (size > hydro_hash_BYTES_MAX)){
             mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range"));
@@ -365,7 +365,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u3
  */
 STATIC mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
     // raises TypeError
-    return mp_obj_new_int(hydro_random_uniform(mp_obj_get_int(upper_bound)));
+    return mp_obj_new_int(hydro_random_uniform(mp_obj_int_get_uint_checked(upper_bound)));
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
 
@@ -375,7 +375,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_rando
  */
 STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
     // raises TypeError
-    size_t len = mp_obj_get_int(len_in);
+    size_t len = mp_obj_int_get_uint_checked(len_in);
 
     vstr_t vstr;
     vstr_init_len(&vstr, len);
@@ -436,7 +436,7 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
 
     if(n_args == 4){
         // raises TypeError
-        hash_size = mp_obj_get_int(args[3]);
+        hash_size = mp_obj_int_get_uint_checked(args[3]);
 
         if((hash_size < hydro_hash_BYTES_MIN) || (hash_size > hydro_hash_BYTES_MAX)){
             mp_raise_ValueError(MP_ERROR_TEXT("Hash size out of range"));
@@ -499,13 +499,13 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
     }
 
     // raises TypeError
-    uint64_t subkey_id = mp_obj_get_int(args[2]);
+    uint64_t subkey_id = mp_obj_int_get_uint_checked(args[2]);
 
     size_t subkey_size = hydro_kdf_KEYBYTES;
 
     if(n_args == 4){
         // raises TypeError
-        subkey_size = mp_obj_get_int(args[3]);
+        subkey_size = mp_obj_int_get_uint_checked(args[3]);
 
         if((subkey_size < hydro_kdf_BYTES_MIN) || (subkey_size > hydro_kdf_BYTES_MAX)){
             mp_raise_ValueError(MP_ERROR_TEXT("Subkey size out of range"));
@@ -564,7 +564,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
 
     if(n_args == 4){
         // raises TypeError
-        msg_id = mp_obj_get_int(args[3]);
+        msg_id = mp_obj_int_get_uint_checked(args[3]);
     }
 
     size_t ciphertext_size = hydro_secretbox_HEADERBYTES + msg_size;
@@ -607,11 +607,10 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
 
     if(n_args == 4){
         // raises TypeError
-        msg_id = mp_obj_get_int(args[3]);
+        msg_id = mp_obj_int_get_uint_checked(args[3]);
     }
 
     size_t msg_size = ciphertext_size - hydro_secretbox_HEADERBYTES;
-
 
     vstr_t vstr;
     vstr_init_len(&vstr, msg_size);
