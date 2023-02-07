@@ -10,6 +10,18 @@ TEST_DATA = "abcdefghijklmnopqrstuvwxyz"
 
 
 class HydrogenTest(unittest.TestCase):
+    def test_init(self):
+        # hydrogen.init()
+
+        hydrogen.init()
+
+    def test_version(self):
+        # hydrogen.version
+
+        self.assertIsInstance(hydrogen.version, tuple)
+        self.assertIsInstance(hydrogen.version[0], int)
+        self.assertIsInstance(hydrogen.version[1], int)
+
     def test_random_u32(self):
         # hydrogen.random_u32()
 
