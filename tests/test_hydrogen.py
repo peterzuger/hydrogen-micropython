@@ -2,8 +2,8 @@ import sys
 import unittest
 import hydrogen
 
-UINT32_MAX = (2 ** 32) - 1
-UINT16_MAX = (2 ** 16) - 1
+UINT32_MAX = (2**32) - 1
+UINT16_MAX = (2**16) - 1
 
 TEST_CONTEXT = "EXAMPLES"
 TEST_DATA = "abcdefghijklmnopqrstuvwxyz"
@@ -11,25 +11,25 @@ TEST_DATA = "abcdefghijklmnopqrstuvwxyz"
 
 class HydrogenTest(unittest.TestCase):
     def test_random_u32(self):
-        # random_u32()
+        # hydrogen.random_u32()
 
         for _ in range(UINT16_MAX):
             r = hydrogen.random_u32()
 
-            self.assertTrue(0 <= r <= UINT32_MAX)
             self.assertIsInstance(r, int)
+            self.assertTrue(0 <= r <= UINT32_MAX)
 
     def test_random_uniform(self):
-        # random_uniform(upper_bound)
+        # hydrogen.random_uniform(upper_bound)
 
         for upper_bound in range(0, UINT32_MAX, UINT16_MAX):
             r = hydrogen.random_uniform(upper_bound)
 
-            self.assertTrue(0 <= r <= upper_bound)
             self.assertIsInstance(r, int)
+            self.assertTrue(0 <= r <= upper_bound)
 
     def test_random_buf(self):
-        # random_buf(len)
+        # hydrogen.random_buf(len)
 
         for l in range(1024):
             r = hydrogen.random_buf(l)
@@ -38,12 +38,12 @@ class HydrogenTest(unittest.TestCase):
             self.assertIsInstance(r, bytes)
 
     def test_random_ratchet(self):
-        # random_ratchet()
+        # hydrogen.random_ratchet()
 
         hydrogen.random_ratchet()
 
     def test_random_reseed(self):
-        # random_reseed()
+        # hydrogen.random_reseed()
 
         hydrogen.random_reseed()
 
@@ -54,8 +54,8 @@ class HydrogenTest(unittest.TestCase):
 
         h = hydrogen.hash_hash(TEST_CONTEXT, TEST_DATA)
 
-        self.assertEqual(hydrogen.hash_BYTES, len(h))
         self.assertIsInstance(h, bytes)
+        self.assertEqual(hydrogen.hash_BYTES, len(h))
 
         # with key
 
@@ -63,38 +63,38 @@ class HydrogenTest(unittest.TestCase):
 
         h = hydrogen.hash_hash(TEST_CONTEXT, TEST_DATA, key)
 
-        self.assertEqual(hydrogen.hash_BYTES, len(h))
         self.assertIsInstance(h, bytes)
+        self.assertEqual(hydrogen.hash_BYTES, len(h))
 
     def test_hash_keygen(self):
-        # hash_keygen()
+        # hydrogen.hash_keygen()
 
         key = hydrogen.hash_keygen()
 
-        self.assertEqual(hydrogen.hash_BYTES, len(key))
         self.assertIsInstance(key, bytes)
+        self.assertEqual(hydrogen.hash_KEYBYTES, len(key))
 
     def test_kdf_keygen(self):
-        # kdf_keygen()
+        # hydrogen.kdf_keygen()
 
         key = hydrogen.kdf_keygen()
 
-        self.assertEqual(hydrogen.kdf_KEYBYTES, len(key))
         self.assertIsInstance(key, bytes)
+        self.assertEqual(hydrogen.kdf_KEYBYTES, len(key))
 
     def test_kdf_derive_from_key(self):
-        # kdf_derive_from_key(context, master_key, subkey_id[, subkey_len])
+        # hydrogen.kdf_derive_from_key(context, master_key, subkey_id[, subkey_len])
 
         master = hydrogen.kdf_keygen()
 
         for i in range(256):
             skey = hydrogen.kdf_derive_from_key(TEST_CONTEXT, master, i)
 
-            self.assertEqual(hydrogen.kdf_KEYBYTES, len(skey))
             self.assertIsInstance(skey, bytes)
+            self.assertEqual(hydrogen.kdf_KEYBYTES, len(skey))
 
     def test_sign_keygen(self):
-        # sign_keygen()
+        # hydrogen.sign_keygen()
 
         pub, pri = hydrogen.sign_keygen()
 
@@ -103,15 +103,15 @@ class HydrogenTest(unittest.TestCase):
         self.assertIsInstance(pri, bytes)
 
     def test_secretbox_keygen(self):
-        # secretbox_keygen()
+        # hydrogen.secretbox_keygen()
 
         key = hydrogen.secretbox_keygen()
 
-        self.assertEqual(hydrogen.secretbox_KEYBYTES, len(key))
         self.assertIsInstance(key, bytes)
+        self.assertEqual(hydrogen.secretbox_KEYBYTES, len(key))
 
     def test_secretbox_encrypt(self):
-        # secretbox_encrypt(context, key, msg[, msg_id])
+        # hydrogen.secretbox_encrypt(context, key, msg[, msg_id])
 
         key = hydrogen.secretbox_keygen()
 
@@ -123,7 +123,7 @@ class HydrogenTest(unittest.TestCase):
         self.assertIsInstance(cipher1, bytes)
 
     def test_secretbox_decrypt(self):
-        # secretbox_decrypt(context, key, ciphertext[, msg_id])
+        # hydrogen.secretbox_decrypt(context, key, ciphertext[, msg_id])
 
         key = hydrogen.secretbox_keygen()
 
@@ -134,9 +134,11 @@ class HydrogenTest(unittest.TestCase):
         msg1 = hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher1, 1)
 
         self.assertEqual(msg0, msg1)
-        self.assertEqual(msg0, TEST_DATA.encode("utf-8"))
         self.assertIsInstance(msg0, bytes)
+        self.assertEqual(len(TEST_DATA), len(msg0))
         self.assertIsInstance(msg1, bytes)
+        self.assertEqual(len(TEST_DATA), len(msg1))
+        self.assertEqual(msg0, TEST_DATA.encode("utf-8"))
 
         with self.assertRaises(RuntimeError) as _:
             hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher0, 1)
@@ -145,7 +147,7 @@ class HydrogenTest(unittest.TestCase):
             hydrogen.secretbox_decrypt(TEST_CONTEXT, key, cipher1)
 
     def test_secretbox_probe_create(self):
-        # secretbox_probe_create(context, key, ciphertext)
+        # hydrogen.secretbox_probe_create(context, key, ciphertext)
 
         key = hydrogen.secretbox_keygen()
 
@@ -153,11 +155,11 @@ class HydrogenTest(unittest.TestCase):
 
         probe = hydrogen.secretbox_probe_create(TEST_CONTEXT, key, cipher)
 
-        self.assertTrue(bool(probe))
         self.assertIsInstance(probe, bytes)
+        self.assertTrue(bool(probe))
 
     def test_secretbox_probe_verify(self):
-        # secretbox_decrypt(context, key, ciphertext, probe)
+        # hydrogen.secretbox_probe_verify(context, key, ciphertext, probe)
 
         key = hydrogen.secretbox_keygen()
 
@@ -170,8 +172,8 @@ class HydrogenTest(unittest.TestCase):
         self.assertIsInstance(verified, bool)
         self.assertTrue(verified)
 
-    def test_hash(self):
-        # Hash(context, key=None)
+    def test_Hash(self):
+        # hydrogen.Hash(context, key=None)
         # .update(data)
         # .final([hash_size])
 
@@ -182,8 +184,8 @@ class HydrogenTest(unittest.TestCase):
             h.update(TEST_DATA)
         f = h.final()
 
-        self.assertEqual(hydrogen.hash_BYTES, len(f))
         self.assertIsInstance(f, bytes)
+        self.assertEqual(hydrogen.hash_BYTES, len(f))
 
         # with key
 
@@ -194,11 +196,11 @@ class HydrogenTest(unittest.TestCase):
             h.update(TEST_DATA)
         f = h.final()
 
-        self.assertEqual(hydrogen.hash_BYTES, len(f))
         self.assertIsInstance(f, bytes)
+        self.assertEqual(hydrogen.hash_BYTES, len(f))
 
     def test_Sign(self):
-        # Sign(context)
+        # hydrogen.Sign(context)
         # .update(data)
         # .final_create(key)
         # .final_verify(signature, key)
