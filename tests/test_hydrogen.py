@@ -242,7 +242,9 @@ class HydrogenTest(unittest.TestCase):
 
         self.assertNotEqual(cipher0, cipher1)
         self.assertIsInstance(cipher0, bytes)
+        self.assertEqual(hydrogen.secretbox_HEADERBYTES + len(TEST_DATA), len(cipher0))
         self.assertIsInstance(cipher1, bytes)
+        self.assertEqual(hydrogen.secretbox_HEADERBYTES + len(TEST_DATA), len(cipher1))
 
     def test_secretbox_decrypt(self):
         # hydrogen.secretbox_decrypt(context, key, ciphertext[, msg_id])
@@ -279,6 +281,7 @@ class HydrogenTest(unittest.TestCase):
 
         self.assertIsInstance(probe, bytes)
         self.assertTrue(bool(probe))
+        self.assertEqual(hydrogen.secretbox_PROBEBYTES, len(probe))
 
     def test_secretbox_probe_verify(self):
         # hydrogen.secretbox_probe_verify(context, key, ciphertext, probe)
