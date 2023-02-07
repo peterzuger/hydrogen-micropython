@@ -387,6 +387,34 @@ STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
 
 /**
+ * Python: hydrogen.random_buf_deterministic(len, seed)
+ * @param len
+ * @param seed
+ */
+STATIC mp_obj_t hydrogen_random_buf_deterministic(mp_obj_t len_in, mp_obj_t seed_in){
+    // raises TypeError
+    size_t len = mp_obj_int_get_uint_checked(len_in);
+
+    size_t seed_size;
+    const uint8_t* seed;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(seed_in, &seed, &seed_size);
+
+    if(seed_size != hydro_random_SEEDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Seed has the wrong size"));
+    }
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, len);
+
+    hydro_random_buf_deterministic(vstr.buf, len, seed);
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_random_buf_deterministic_fun_obj, hydrogen_random_buf_deterministic);
+
+/**
  * Python: hydrogen.random_ratchet()
  */
 STATIC mp_obj_t hydrogen_random_ratchet(void){
@@ -743,6 +771,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
 #endif /* MICROPY_MODULE_BUILTIN_INIT */
 #endif /* HYDRO_INIT_ON_IMPORT */
 
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_SEEDBYTES),          MP_ROM_INT(hydro_random_SEEDBYTES)                     },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES),                MP_ROM_INT(hydro_hash_BYTES)                           },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_KEYBYTES),             MP_ROM_INT(hydro_hash_KEYBYTES)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_BYTES_MAX),            MP_ROM_INT(hydro_hash_BYTES_MAX)                       },
@@ -756,6 +785,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),                MP_ROM_PTR(&hydrogen_random_u32_fun_obj)               },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_uniform),            MP_ROM_PTR(&hydrogen_random_uniform_fun_obj)           },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf),                MP_ROM_PTR(&hydrogen_random_buf_fun_obj)               },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_random_buf_deterministic),  MP_ROM_PTR(&hydrogen_random_buf_deterministic_fun_obj) },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_ratchet),            MP_ROM_PTR(&hydrogen_random_ratchet_fun_obj)           },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_reseed),             MP_ROM_PTR(&hydrogen_random_reseed_fun_obj)            },
     { MP_OBJ_NEW_QSTR(MP_QSTR_hash_hash),                 MP_ROM_PTR(&hydrogen_hash_hash_fun_obj)                },

@@ -43,11 +43,50 @@ class HydrogenTest(unittest.TestCase):
     def test_random_buf(self):
         # hydrogen.random_buf(len)
 
-        for l in range(1024):
+        for l in range(1, 1024):
             r = hydrogen.random_buf(l)
 
-            self.assertEqual(l, len(r))
             self.assertIsInstance(r, bytes)
+            self.assertEqual(l, len(r))
+
+            r2 = hydrogen.random_buf(l)
+
+            self.assertIsInstance(r2, bytes)
+            self.assertEqual(l, len(r2))
+
+            self.assertNotEqual(r, r2)
+
+        with self.assertRaises(OverflowError):
+            r = hydrogen.random_buf(-1)
+
+    def test_random_buf_deterministic(self):
+        # hydrogen.random_buf_deterministic(len, seed)
+
+        seed = b"A" * hydrogen.random_SEEDBYTES
+        seed2 = b"B" * hydrogen.random_SEEDBYTES
+
+        for l in range(1, 1024):
+            r = hydrogen.random_buf_deterministic(l, seed)
+
+            self.assertIsInstance(r, bytes)
+            self.assertEqual(l, len(r))
+
+            r2 = hydrogen.random_buf_deterministic(l, seed2)
+
+            self.assertIsInstance(r2, bytes)
+            self.assertEqual(l, len(r2))
+
+            self.assertNotEqual(r, r2)
+
+            r3 = hydrogen.random_buf_deterministic(l, seed)
+
+            self.assertIsInstance(r3, bytes)
+            self.assertEqual(l, len(r3))
+
+            self.assertEqual(r, r3)
+
+        with self.assertRaises(OverflowError):
+            r = hydrogen.random_buf_deterministic(-1, seed)
 
     def test_random_ratchet(self):
         # hydrogen.random_ratchet()
