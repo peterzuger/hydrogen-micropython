@@ -7,6 +7,7 @@ UINT16_MAX = (2**16) - 1
 
 TEST_CONTEXT = "EXAMPLES"
 TEST_DATA = "abcdefghijklmnopqrstuvwxyz"
+TEST_PASSWORD = "correcthorsebatterystaple"
 
 
 class HydrogenTest(unittest.TestCase):
@@ -296,6 +297,98 @@ class HydrogenTest(unittest.TestCase):
 
         self.assertIsInstance(verified, bool)
         self.assertTrue(verified)
+
+    def test_pwhash_keygen(self):
+        # hydrogen.pwhash_keygen()
+
+        key = hydrogen.pwhash_keygen()
+
+        self.assertIsInstance(key, bytes)
+        self.assertEqual(hydrogen.pwhash_MASTERKEYBYTES, len(key))
+
+    def test_pwhash_deterministic(self):
+        # hydrogen.pwhash_deterministic(context, key, passwd, hash_size, opslimit, memlimit, threads)
+
+        key = hydrogen.pwhash_keygen()
+
+        for hash_size in range(128):
+            for opslimit in (10, 1000, 100000):
+                stored = hydrogen.pwhash_deterministic(
+                    TEST_CONTEXT, key, TEST_PASSWORD, hash_size, opslimit, 1, 1
+                )
+
+                self.assertIsInstance(stored, bytes)
+                self.assertEqual(hash_size, len(stored))
+
+    def test_pwhash_create(self):
+        # hydrogen.pwhash_create(key, passwd, opslimit, memlimit, threads)
+
+        key = hydrogen.pwhash_keygen()
+
+        for opslimit in (10, 1000, 100000):
+            stored = hydrogen.pwhash_create(key, TEST_PASSWORD, opslimit, 1, 1)
+
+            self.assertIsInstance(stored, bytes)
+            self.assertEqual(hydrogen.pwhash_STOREDBYTES, len(stored))
+
+    def test_pwhash_verify(self):
+        # hydrogen.pwhash_verify(key, passwd, stored, opslimit_max, memlimit_max, threads_max)
+
+        key = hydrogen.pwhash_keygen()
+
+        for opslimit in (10, 1000, 100000):
+            stored = hydrogen.pwhash_create(key, TEST_PASSWORD, opslimit, 1, 1)
+
+            verified = hydrogen.pwhash_verify(
+                key, TEST_PASSWORD, stored, opslimit, 1, 1
+            )
+
+            self.assertIsInstance(verified, bool)
+            self.assertTrue(verified)
+
+    def test_pwhash_derive_static_key(self):
+        # hydrogen.pwhash_derive_static_key(context, key, passwd, stored, static_key_size, opslimit_max, memlimit_max, threads_max)
+
+        key = hydrogen.pwhash_keygen()
+
+        for opslimit in (10, 1000, 100000):
+            stored = hydrogen.pwhash_create(key, TEST_PASSWORD, opslimit, 1, 1)
+
+            static_len = 64
+            static = hydrogen.pwhash_derive_static_key(
+                TEST_CONTEXT, key, TEST_PASSWORD, stored, static_len, opslimit, 1, 1
+            )
+
+            self.assertIsInstance(static, bytes)
+            self.assertEqual(static_len, len(static))
+
+    def test_pwhash_reencrypt(self):
+        # hydrogen.pwhash_reencrypt(stored, old_key, new_key)
+
+        key = hydrogen.pwhash_keygen()
+        key2 = hydrogen.pwhash_keygen()
+
+        for opslimit in (10, 1000, 100000):
+            stored = hydrogen.pwhash_create(key, TEST_PASSWORD, opslimit, 1, 1)
+
+            stored2 = hydrogen.pwhash_reencrypt(stored, key, key2)
+
+            self.assertIsInstance(stored, bytes)
+            self.assertNotEqual(stored, stored2)
+
+    def test_pwhash_upgrade(self):
+        # hydrogen.pwhash_upgrade(stored, key, opslimit, memlimit, threads)
+
+        key = hydrogen.pwhash_keygen()
+
+        for opslimit in (10, 1000, 100000):
+            stored = hydrogen.pwhash_create(key, TEST_PASSWORD, opslimit, 1, 1)
+
+            for opslimit in (10, 1000, 100000):
+                stored2 = hydrogen.pwhash_upgrade(stored, key, 100000, 1, 1)
+
+                self.assertIsInstance(stored, bytes)
+                self.assertNotEqual(stored, stored2)
 
     def test_Hash(self):
         # hydrogen.Hash(context, key=None)

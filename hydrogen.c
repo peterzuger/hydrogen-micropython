@@ -32,6 +32,8 @@
 
 #if defined(MODULE_HYDROGEN_ENABLED) && MODULE_HYDROGEN_ENABLED == 1
 
+#include <string.h>
+
 #include "py/misc.h"
 #include "py/obj.h"
 #include "py/objarray.h"
@@ -859,6 +861,324 @@ STATIC mp_obj_t hydrogen_sign_verify(size_t n_args, const mp_obj_t* args){
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_sign_verify_fun_obj, 4, 4, hydrogen_sign_verify);
 
+/**
+ * Python: hydrogen.pwhash_keygen()
+ */
+STATIC mp_obj_t hydrogen_pwhash_keygen(void){
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_pwhash_MASTERKEYBYTES);
+
+    hydro_pwhash_keygen((uint8_t*)vstr.buf);
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_pwhash_keygen_fun_obj, hydrogen_pwhash_keygen);
+
+/**
+ * Python: hydrogen.pwhash_deterministic(context, key, passwd, hash_size, opslimit, memlimit, threads)
+ * @param context
+ * @param key
+ * @param passwd
+ * @param hash_size
+ * @param opslimit
+ * @param memlimit
+ * @param threads
+ */
+STATIC mp_obj_t hydrogen_pwhash_deterministic(size_t n_args, const mp_obj_t* args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_pwhash_CONTEXTBYTES);
+
+    size_t hash_size = mp_obj_int_get_uint_checked(args[3]);
+
+    uint64_t opslimit = mp_obj_int_get_uint_checked(args[4]);
+    size_t memlimit = mp_obj_int_get_uint_checked(args[5]);
+    uint8_t threads = mp_obj_int_get_uint_checked(args[6]);
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_pwhash_MASTERKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master Key has the wrong size"));
+    }
+
+    size_t passwd_size;
+    const uint8_t* passwd;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &passwd, &passwd_size);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, hash_size);
+
+    int ret = hydro_pwhash_deterministic((uint8_t*)vstr.buf,
+                                         hash_size,
+                                         (const char*)passwd,
+                                         passwd_size,
+                                         context,
+                                         key,
+                                         opslimit,
+                                         memlimit,
+                                         threads);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_pwhash_deterministic() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_deterministic_fun_obj, 7, 7, hydrogen_pwhash_deterministic);
+
+/**
+ * Python: hydrogen.pwhash_create(key, passwd, opslimit, memlimit, threads)
+ * @param key
+ * @param passwd
+ * @param opslimit
+ * @param memlimit
+ * @param threads
+ */
+STATIC mp_obj_t hydrogen_pwhash_create(size_t n_args, const mp_obj_t* args){
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[0], &key, &key_size);
+
+    if(key_size != hydro_pwhash_MASTERKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master Key has the wrong size"));
+    }
+
+    size_t passwd_size;
+    const uint8_t* passwd;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &passwd, &passwd_size);
+
+    uint64_t opslimit = mp_obj_int_get_uint_checked(args[2]);
+    size_t memlimit = mp_obj_int_get_uint_checked(args[3]);
+    uint8_t threads = mp_obj_int_get_uint_checked(args[4]);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_pwhash_STOREDBYTES);
+
+    int ret = hydro_pwhash_create((uint8_t*)vstr.buf, (const char*)passwd, passwd_size, key, opslimit, memlimit, threads);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_pwhash_create() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_create_fun_obj, 5, 5, hydrogen_pwhash_create);
+
+/**
+ * Python: hydrogen.pwhash_verify(key, passwd, stored, opslimit_max, memlimit_max, threads_max)
+ * @param key
+ * @param passwd
+ * @param stored
+ * @param opslimit_max
+ * @param memlimit_max
+ * @param threads_max
+ */
+STATIC mp_obj_t hydrogen_pwhash_verify(size_t n_args, const mp_obj_t* args){
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[0], &key, &key_size);
+
+    if(key_size != hydro_pwhash_MASTERKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master Key has the wrong size"));
+    }
+
+    size_t passwd_size;
+    const uint8_t* passwd;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &passwd, &passwd_size);
+
+    size_t stored_size;
+    const uint8_t* stored;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &stored, &stored_size);
+
+    if(stored_size != hydro_pwhash_STOREDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Stored has the wrong size"));
+    }
+
+    uint64_t opslimit_max = mp_obj_int_get_uint_checked(args[3]);
+    size_t memlimit_max = mp_obj_int_get_uint_checked(args[4]);
+    uint8_t threads_max = mp_obj_int_get_uint_checked(args[5]);
+
+    if(hydro_pwhash_verify(stored, (const char*)passwd, passwd_size, key, opslimit_max, memlimit_max, threads_max) == 0){
+        return mp_const_true;
+    }
+    return mp_const_false;
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_verify_fun_obj, 6, 6, hydrogen_pwhash_verify);
+
+/**
+ * Python: hydrogen.pwhash_derive_static_key(context, key, passwd, stored, static_key_size, opslimit_max, memlimit_max, threads_max)
+ * @param context
+ * @param key
+ * @param passwd
+ * @param stored
+ * @param static_key_size
+ * @param opslimit_max
+ * @param memlimit_max
+ * @param threads_max
+ */
+STATIC mp_obj_t hydrogen_pwhash_derive_static_key(size_t n_args, const mp_obj_t* args){
+    const char* context = hydrogen_mp_obj_get_context(args[0], hydro_pwhash_CONTEXTBYTES);
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    if(key_size != hydro_pwhash_MASTERKEYBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master Key has the wrong size"));
+    }
+
+    size_t passwd_size;
+    const uint8_t* passwd;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[2], &passwd, &passwd_size);
+
+    size_t stored_size;
+    const uint8_t* stored;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[3], &stored, &stored_size);
+
+    if(stored_size != hydro_pwhash_STOREDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Stored has the wrong size"));
+    }
+
+    size_t static_key_size = mp_obj_int_get_uint_checked(args[4]);
+
+    uint64_t opslimit_max = mp_obj_int_get_uint_checked(args[5]);
+    size_t memlimit_max = mp_obj_int_get_uint_checked(args[6]);
+    uint8_t threads_max = mp_obj_int_get_uint_checked(args[7]);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, static_key_size);
+
+    int ret = hydro_pwhash_derive_static_key((uint8_t*)vstr.buf,
+                                             static_key_size,
+                                             stored,
+                                             (const char*)passwd,
+                                             passwd_size,
+                                             context,
+                                             key,
+                                             opslimit_max,
+                                             memlimit_max,
+                                             threads_max);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_pwhash_derive_static_key() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_derive_static_key_fun_obj, 8, 8, hydrogen_pwhash_derive_static_key);
+
+/**
+ * Python: hydrogen.pwhash_reencrypt(stored, old_key, new_key)
+ * @param stored
+ * @param old_key
+ * @param new_key
+ */
+STATIC mp_obj_t hydrogen_pwhash_reencrypt(mp_obj_t stored_in, mp_obj_t key_in, mp_obj_t new_key_in){
+    size_t stored_size;
+    const uint8_t* stored;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(stored_in, &stored, &stored_size);
+
+    if(stored_size != hydro_pwhash_STOREDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Stored has the wrong size"));
+    }
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(key_in, &key, &key_size);
+
+    size_t new_key_size;
+    const uint8_t* new_key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(new_key_in, &new_key, &new_key_size);
+
+    if((key_size != hydro_pwhash_MASTERKEYBYTES) || (new_key_size != hydro_pwhash_MASTERKEYBYTES)){
+        mp_raise_ValueError(MP_ERROR_TEXT("Master Key has the wrong size"));
+    }
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_pwhash_STOREDBYTES);
+
+    memcpy(vstr.buf, stored, hydro_pwhash_STOREDBYTES);
+
+    int ret = hydro_pwhash_reencrypt((uint8_t*)vstr.buf, key, new_key);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_pwhash_reencrypt() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_pwhash_reencrypt_fun_obj, hydrogen_pwhash_reencrypt);
+
+/**
+ * Python: hydrogen.pwhash_upgrade(stored, key, opslimit, memlimit, threads)
+ * @param stored
+ * @param key
+ * @param opslimit
+ * @param memlimit
+ * @param threads
+ */
+STATIC mp_obj_t hydrogen_pwhash_upgrade(size_t n_args, const mp_obj_t* args){
+    size_t stored_size;
+    const uint8_t* stored;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[0], &stored, &stored_size);
+
+    if(stored_size != hydro_pwhash_STOREDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Stored has the wrong size"));
+    }
+
+    size_t key_size;
+    const uint8_t* key;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(args[1], &key, &key_size);
+
+    uint64_t opslimit = mp_obj_int_get_uint_checked(args[2]);
+    size_t memlimit = mp_obj_int_get_uint_checked(args[3]);
+    uint8_t threads = mp_obj_int_get_uint_checked(args[4]);
+
+    vstr_t vstr;
+    vstr_init_len(&vstr, hydro_pwhash_STOREDBYTES);
+
+    memcpy(vstr.buf, stored, hydro_pwhash_STOREDBYTES);
+
+    int ret = hydro_pwhash_upgrade((uint8_t*)vstr.buf, key, opslimit, memlimit, threads);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_pwhash_upgrade() failed"));
+    }
+
+    return mp_obj_new_bytes_from_vstr(&vstr);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_upgrade_fun_obj, 5, 5, hydrogen_pwhash_upgrade);
+
 
 STATIC const mp_obj_tuple_t hydrogen_version_obj = {
     {&mp_type_tuple},
@@ -896,6 +1216,8 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_KEYBYTES),        MP_ROM_INT(hydro_secretbox_KEYBYTES)                   },
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_HEADERBYTES),     MP_ROM_INT(hydro_secretbox_HEADERBYTES)                },
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_PROBEBYTES),      MP_ROM_INT(hydro_secretbox_PROBEBYTES)                 },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_MASTERKEYBYTES),     MP_ROM_INT(hydro_pwhash_MASTERKEYBYTES)                },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_STOREDBYTES),        MP_ROM_INT(hydro_pwhash_STOREDBYTES)                   },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_init),                      MP_ROM_PTR(&hydrogen_init_fun_obj)                     },
     { MP_OBJ_NEW_QSTR(MP_QSTR_random_u32),                MP_ROM_PTR(&hydrogen_random_u32_fun_obj)               },
@@ -917,6 +1239,13 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen_deterministic), MP_ROM_PTR(&hydrogen_sign_keygen_deterministic_fun_obj)},
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_create),               MP_ROM_PTR(&hydrogen_sign_create_fun_obj)              },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_verify),               MP_ROM_PTR(&hydrogen_sign_verify_fun_obj)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_keygen),             MP_ROM_PTR(&hydrogen_pwhash_keygen_fun_obj)            },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_deterministic),      MP_ROM_PTR(&hydrogen_pwhash_deterministic_fun_obj)     },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_create),             MP_ROM_PTR(&hydrogen_pwhash_create_fun_obj)            },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_verify),             MP_ROM_PTR(&hydrogen_pwhash_verify_fun_obj)            },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_derive_static_key),  MP_ROM_PTR(&hydrogen_pwhash_derive_static_key_fun_obj) },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_reencrypt),          MP_ROM_PTR(&hydrogen_pwhash_reencrypt_fun_obj)         },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_pwhash_upgrade),            MP_ROM_PTR(&hydrogen_pwhash_upgrade_fun_obj)           },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_Hash),                      MP_ROM_PTR(&hydrogen_Hash_type)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_Sign),                      MP_ROM_PTR(&hydrogen_Sign_type)                        },
