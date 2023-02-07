@@ -215,7 +215,7 @@ class HydrogenTest(unittest.TestCase):
         s = hydrogen.Sign(TEST_CONTEXT)
         for _ in range(256):
             s.update(TEST_DATA)
-        verified = s.final_verify(signature, pub)
+        verified = s.final_verify(pub, signature)
 
         self.assertIsInstance(verified, bool)
         self.assertTrue(verified)

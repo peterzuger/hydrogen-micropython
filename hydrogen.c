@@ -202,7 +202,7 @@ mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type, size_t n_args, size_t
 STATIC void hydrogen_Sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
 STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in);
 STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
-STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in);
+STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in);
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_update_fun_obj, hydrogen_Sign_update);
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_final_create_fun_obj, hydrogen_Sign_final_create);
@@ -305,12 +305,12 @@ STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
 }
 
 /**
- * Python: hydrogen.Sign.final_verify(self, signature, key)
+ * Python: hydrogen.Sign.final_verify(self, key, signature)
  * @param self
  * @param signature
  * @param key
  */
-STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t signature_in, mp_obj_t key_in){
+STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in){
     hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t signature_size;
