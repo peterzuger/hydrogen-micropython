@@ -151,7 +151,57 @@ class HydrogenTest(unittest.TestCase):
 
         self.assertNotEqual(pub, pri)
         self.assertIsInstance(pub, bytes)
+        self.assertEqual(hydrogen.sign_PUBLICKEYBYTES, len(pub))
         self.assertIsInstance(pri, bytes)
+        self.assertEqual(hydrogen.sign_SECRETKEYBYTES, len(pri))
+
+        pub2, pri2 = hydrogen.sign_keygen()
+
+        self.assertNotEqual(pub2, pri2)
+        self.assertIsInstance(pub2, bytes)
+        self.assertEqual(hydrogen.sign_PUBLICKEYBYTES, len(pub2))
+        self.assertIsInstance(pri2, bytes)
+        self.assertEqual(hydrogen.sign_SECRETKEYBYTES, len(pri2))
+
+        self.assertNotEqual(pub2, pub)
+        self.assertNotEqual(pri2, pri)
+
+    def test_sign_keygen_deterministic(self):
+        # hydrogen.sign_keygen_deterministic(seed)
+
+        seed = b"A" * hydrogen.sign_SEEDBYTES
+        seed2 = b"B" * hydrogen.sign_SEEDBYTES
+
+        pub, pri = hydrogen.sign_keygen_deterministic(seed)
+
+        self.assertNotEqual(pub, pri)
+        self.assertIsInstance(pub, bytes)
+        self.assertEqual(hydrogen.sign_PUBLICKEYBYTES, len(pub))
+        self.assertIsInstance(pri, bytes)
+        self.assertEqual(hydrogen.sign_SECRETKEYBYTES, len(pri))
+
+        pub2, pri2 = hydrogen.sign_keygen_deterministic(seed2)
+
+        self.assertNotEqual(pub2, pri2)
+        self.assertIsInstance(pub2, bytes)
+        self.assertEqual(hydrogen.sign_PUBLICKEYBYTES, len(pub2))
+        self.assertIsInstance(pri2, bytes)
+        self.assertEqual(hydrogen.sign_SECRETKEYBYTES, len(pri2))
+
+        self.assertNotEqual(pub2, pub)
+        self.assertNotEqual(pri2, pri)
+
+        pub3, pri3 = hydrogen.sign_keygen_deterministic(seed)
+
+        self.assertNotEqual(pub3, pri3)
+        self.assertIsInstance(pub3, bytes)
+        self.assertEqual(hydrogen.sign_PUBLICKEYBYTES, len(pub3))
+        self.assertIsInstance(pri3, bytes)
+        self.assertEqual(hydrogen.sign_SECRETKEYBYTES, len(pri3))
+
+        self.assertEqual(pub3, pub)
+        self.assertEqual(pri3, pri)
+
 
     def test_secretbox_keygen(self):
         # hydrogen.secretbox_keygen()

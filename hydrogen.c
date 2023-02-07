@@ -749,6 +749,35 @@ STATIC mp_obj_t hydrogen_sign_keygen(void){
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_keygen);
 
+/**
+ * Python: hydrogen.sign_keygen_deterministic(seed)
+ * @param seed
+ */
+STATIC mp_obj_t hydrogen_sign_keygen_deterministic(mp_obj_t seed_in){
+    size_t seed_size;
+    const uint8_t* seed;
+
+    // raises TypeError
+    hydrogen_mp_obj_get_data(seed_in, &seed, &seed_size);
+
+    if(seed_size != hydro_sign_SEEDBYTES){
+        mp_raise_ValueError(MP_ERROR_TEXT("Seed has the wrong size"));
+    }
+
+    hydro_sign_keypair key_pair;
+    hydro_sign_keygen_deterministic(&key_pair, seed);
+
+    mp_obj_t tuple[2] = {
+        mp_obj_new_bytes(key_pair.pk, hydro_sign_PUBLICKEYBYTES),
+        mp_obj_new_bytes(key_pair.sk, hydro_sign_SECRETKEYBYTES),
+    };
+
+    hydro_memzero(&key_pair, hydro_sign_PUBLICKEYBYTES + hydro_sign_SECRETKEYBYTES);
+
+    return mp_obj_new_tuple(2, tuple);
+}
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_sign_keygen_deterministic_fun_obj, hydrogen_sign_keygen_deterministic);
+
 
 STATIC const mp_obj_tuple_t hydrogen_version_obj = {
     {&mp_type_tuple},
@@ -779,6 +808,9 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_KEYBYTES),              MP_ROM_INT(hydro_kdf_KEYBYTES)                         },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MAX),             MP_ROM_INT(hydro_kdf_BYTES_MAX)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_kdf_BYTES_MIN),             MP_ROM_INT(hydro_kdf_BYTES_MIN)                        },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_SEEDBYTES),            MP_ROM_INT(hydro_sign_SEEDBYTES)                       },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_SECRETKEYBYTES),       MP_ROM_INT(hydro_sign_SECRETKEYBYTES)                  },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_PUBLICKEYBYTES),       MP_ROM_INT(hydro_sign_PUBLICKEYBYTES)                  },
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_KEYBYTES),        MP_ROM_INT(hydro_secretbox_KEYBYTES)                   },
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_init),                      MP_ROM_PTR(&hydrogen_init_fun_obj)                     },
@@ -798,6 +830,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_probe_create),    MP_ROM_PTR(&hydrogen_secretbox_probe_create_fun_obj)   },
     { MP_OBJ_NEW_QSTR(MP_QSTR_secretbox_probe_verify),    MP_ROM_PTR(&hydrogen_secretbox_probe_verify_fun_obj)   },
     { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen),               MP_ROM_PTR(&hydrogen_sign_keygen_fun_obj)              },
+    { MP_OBJ_NEW_QSTR(MP_QSTR_sign_keygen_deterministic), MP_ROM_PTR(&hydrogen_sign_keygen_deterministic_fun_obj)},
 
     { MP_OBJ_NEW_QSTR(MP_QSTR_Hash),                      MP_ROM_PTR(&hydrogen_Hash_type)                        },
     { MP_OBJ_NEW_QSTR(MP_QSTR_Sign),                      MP_ROM_PTR(&hydrogen_Sign_type)                        },
