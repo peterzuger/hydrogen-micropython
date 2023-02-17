@@ -476,7 +476,11 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     vstr_t vstr;
     vstr_init_len(&vstr, hash_size);
 
-    hydro_hash_hash((uint8_t*)vstr.buf, hash_size, data, size, context, key);
+    int ret = hydro_hash_hash((uint8_t*)vstr.buf, hash_size, data, size, context, key);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_hash_hash() failed"));
+    }
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
