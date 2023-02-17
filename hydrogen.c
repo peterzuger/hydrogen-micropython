@@ -545,7 +545,11 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
     vstr_t vstr;
     vstr_init_len(&vstr, subkey_size);
 
-    hydro_kdf_derive_from_key((uint8_t*)vstr.buf, subkey_size, subkey_id, context, master_key);
+    int ret = hydro_kdf_derive_from_key((uint8_t*)vstr.buf, subkey_size, subkey_id, context, master_key);
+
+    if(ret != 0){
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_kdf_derive_from_key() failed"));
+    }
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
