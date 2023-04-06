@@ -111,9 +111,7 @@ mp_obj_t hydrogen_Hash_make_new(const mp_obj_type_t* type,
     mp_arg_check_num(n_args, n_kw, 1, 2, false);
 
     // raises MemoryError
-    hydrogen_Hash_obj_t* self = m_new_obj(hydrogen_Hash_obj_t);
-
-    self->base.type = &hydrogen_Hash_type;
+    hydrogen_Hash_obj_t* self = mp_obj_malloc(hydrogen_Hash_obj_t, type);
 
     // raises TypeError, ValueError
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
@@ -239,9 +237,7 @@ mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type,
     mp_arg_check_num(n_args, n_kw, 1, 1, false);
 
     // raises MemoryError
-    hydrogen_Sign_obj_t* self = m_new_obj(hydrogen_Sign_obj_t);
-
-    self->base.type = &hydrogen_Sign_type;
+    hydrogen_Sign_obj_t* self = mp_obj_malloc(hydrogen_Sign_obj_t, type);
 
     // raises TypeError, ValueError
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_sign_CONTEXTBYTES);
