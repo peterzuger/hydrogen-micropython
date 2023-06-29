@@ -8,6 +8,7 @@ stages:
 
 # global variables
 variables:
+  GIT_SUBMODULE_STRATEGY: recursive
   CMODULES: $CI_PROJECT_DIR/..
 
 fetch-micropython:
