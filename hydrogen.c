@@ -74,20 +74,20 @@ typedef struct _hydrogen_Hash_obj_t{
 
 
 mp_obj_t hydrogen_Hash_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
-STATIC void hydrogen_Hash_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
-STATIC mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in);
-STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args);
+static void hydrogen_Hash_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+static mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in);
+static mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args);
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Hash_update_fun_obj, hydrogen_Hash_update);
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_Hash_final_fun_obj, 1, 2, hydrogen_Hash_final);
+static MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Hash_update_fun_obj, hydrogen_Hash_update);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_Hash_final_fun_obj, 1, 2, hydrogen_Hash_final);
 
 
-STATIC const mp_rom_map_elem_t hydrogen_Hash_locals_dict_table[]={
+static const mp_rom_map_elem_t hydrogen_Hash_locals_dict_table[]={
     // class methods
     { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hydrogen_Hash_update_fun_obj) },
     { MP_ROM_QSTR(MP_QSTR_final),  MP_ROM_PTR(&hydrogen_Hash_final_fun_obj)  },
 };
-STATIC MP_DEFINE_CONST_DICT(hydrogen_Hash_locals_dict,hydrogen_Hash_locals_dict_table);
+static MP_DEFINE_CONST_DICT(hydrogen_Hash_locals_dict,hydrogen_Hash_locals_dict_table);
 
 
 MP_DEFINE_CONST_OBJ_TYPE(
@@ -137,7 +137,7 @@ mp_obj_t hydrogen_Hash_make_new(const mp_obj_type_t* type,
  * Python: print(hydrogen.Hash(context, key))
  * @param obj
  */
-STATIC void hydrogen_Hash_print(const mp_print_t* print,
+static void hydrogen_Hash_print(const mp_print_t* print,
                                 mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "Hash()");
@@ -148,7 +148,7 @@ STATIC void hydrogen_Hash_print(const mp_print_t* print,
  * @param self
  * @param data
  */
-STATIC mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in){
+static mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
@@ -167,7 +167,7 @@ STATIC mp_obj_t hydrogen_Hash_update(mp_obj_t self_in, mp_obj_t data_in){
  * @param self
  * @param hash_size
  */
-STATIC mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
     hydrogen_Hash_obj_t* self = MP_OBJ_TO_PTR(args[0]);
 
     size_t size = hydro_hash_BYTES;
@@ -199,22 +199,22 @@ typedef struct _hydrogen_Sign_obj_t{
 
 
 mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type, size_t n_args, size_t n_kw, const mp_obj_t* args);
-STATIC void hydrogen_Sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
-STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in);
-STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
-STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in);
+static void hydrogen_Sign_print(const mp_print_t* print, mp_obj_t self_in, mp_print_kind_t kind);
+static mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in);
+static mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in);
+static mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in);
 
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_update_fun_obj, hydrogen_Sign_update);
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_final_create_fun_obj, hydrogen_Sign_final_create);
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_Sign_final_verify_fun_obj, hydrogen_Sign_final_verify);
+static MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_update_fun_obj, hydrogen_Sign_update);
+static MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_Sign_final_create_fun_obj, hydrogen_Sign_final_create);
+static MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_Sign_final_verify_fun_obj, hydrogen_Sign_final_verify);
 
-STATIC const mp_rom_map_elem_t hydrogen_Sign_locals_dict_table[]={
+static const mp_rom_map_elem_t hydrogen_Sign_locals_dict_table[]={
     // class methods
     { MP_ROM_QSTR(MP_QSTR_update),       MP_ROM_PTR(&hydrogen_Sign_update_fun_obj)       },
     { MP_ROM_QSTR(MP_QSTR_final_create), MP_ROM_PTR(&hydrogen_Sign_final_create_fun_obj) },
     { MP_ROM_QSTR(MP_QSTR_final_verify), MP_ROM_PTR(&hydrogen_Sign_final_verify_fun_obj) },
 };
-STATIC MP_DEFINE_CONST_DICT(hydrogen_Sign_locals_dict,hydrogen_Sign_locals_dict_table);
+static MP_DEFINE_CONST_DICT(hydrogen_Sign_locals_dict,hydrogen_Sign_locals_dict_table);
 
 
 MP_DEFINE_CONST_OBJ_TYPE(
@@ -251,7 +251,7 @@ mp_obj_t hydrogen_Sign_make_new(const mp_obj_type_t* type,
  * Python: print(hydrogen.Sign(context))
  * @param obj
  */
-STATIC void hydrogen_Sign_print(const mp_print_t* print,
+static void hydrogen_Sign_print(const mp_print_t* print,
                                 mp_obj_t self_in, mp_print_kind_t kind){
     //hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
     mp_printf(print, "Sign()");
@@ -262,7 +262,7 @@ STATIC void hydrogen_Sign_print(const mp_print_t* print,
  * @param self
  * @param data
  */
-STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in){
+static mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in){
     hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t size;
@@ -281,7 +281,7 @@ STATIC mp_obj_t hydrogen_Sign_update(mp_obj_t self_in, mp_obj_t data_in){
  * @param self
  * @param key
  */
-STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
+static mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
     hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t key_size;
@@ -308,7 +308,7 @@ STATIC mp_obj_t hydrogen_Sign_final_create(mp_obj_t self_in, mp_obj_t key_in){
  * @param signature
  * @param key
  */
-STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in){
+static mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t signature_in){
     hydrogen_Sign_obj_t* self = MP_OBJ_TO_PTR(self_in);
 
     size_t signature_size;
@@ -341,37 +341,37 @@ STATIC mp_obj_t hydrogen_Sign_final_verify(mp_obj_t self_in, mp_obj_t key_in, mp
 /**
  * Python: hydrogen.init()
  */
-STATIC mp_obj_t hydrogen_init(void){
+static mp_obj_t hydrogen_init(void){
     if(hydro_init() != 0){
         mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("hydro_init() failed"));
     }
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_init_fun_obj, hydrogen_init);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_init_fun_obj, hydrogen_init);
 
 /**
  * Python: hydrogen.random_u32()
  */
-STATIC mp_obj_t hydrogen_random_u32(void){
+static mp_obj_t hydrogen_random_u32(void){
     return mp_obj_new_int(hydro_random_u32());
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u32);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u32);
 
 /**
  * Python: hydrogen.random_uniform(upper_bound)
  * @param upper_bound
  */
-STATIC mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
+static mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
     // raises TypeError
     return mp_obj_new_int(hydro_random_uniform(mp_obj_int_get_uint_checked(upper_bound)));
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
+static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
 
 /**
  * Python: hydrogen.random_buf(len)
  * @param len
  */
-STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
+static mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
     // raises TypeError
     size_t len = mp_obj_int_get_uint_checked(len_in);
 
@@ -382,14 +382,14 @@ STATIC mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
+static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_buf);
 
 /**
  * Python: hydrogen.random_buf_deterministic(len, seed)
  * @param len
  * @param seed
  */
-STATIC mp_obj_t hydrogen_random_buf_deterministic(mp_obj_t len_in, mp_obj_t seed_in){
+static mp_obj_t hydrogen_random_buf_deterministic(mp_obj_t len_in, mp_obj_t seed_in){
     // raises TypeError
     size_t len = mp_obj_int_get_uint_checked(len_in);
 
@@ -410,25 +410,25 @@ STATIC mp_obj_t hydrogen_random_buf_deterministic(mp_obj_t len_in, mp_obj_t seed
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_random_buf_deterministic_fun_obj, hydrogen_random_buf_deterministic);
+static MP_DEFINE_CONST_FUN_OBJ_2(hydrogen_random_buf_deterministic_fun_obj, hydrogen_random_buf_deterministic);
 
 /**
  * Python: hydrogen.random_ratchet()
  */
-STATIC mp_obj_t hydrogen_random_ratchet(void){
+static mp_obj_t hydrogen_random_ratchet(void){
     hydro_random_ratchet();
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_ratchet_fun_obj, hydrogen_random_ratchet);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_ratchet_fun_obj, hydrogen_random_ratchet);
 
 /**
  * Python: hydrogen.random_reseed()
  */
-STATIC mp_obj_t hydrogen_random_reseed(void){
+static mp_obj_t hydrogen_random_reseed(void){
     hydro_random_reseed();
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random_reseed);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random_reseed);
 
 /**
  * Python: hydrogen.hash_hash(context, data, key=None[, hash_size])
@@ -437,7 +437,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_reseed_fun_obj, hydrogen_random
  * @param key
  * @param hash_size
  */
-STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_hash_CONTEXTBYTES);
 
     size_t size;
@@ -480,12 +480,12 @@ STATIC mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_hash_hash_fun_obj, 2, 4, hydrogen_hash_hash);
 
 /**
  * Python: hydrogen.hash_keygen()
  */
-STATIC mp_obj_t hydrogen_hash_keygen(void){
+static mp_obj_t hydrogen_hash_keygen(void){
     vstr_t vstr;
     vstr_init_len(&vstr, hydro_hash_KEYBYTES);
 
@@ -493,12 +493,12 @@ STATIC mp_obj_t hydrogen_hash_keygen(void){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_hash_keygen_fun_obj, hydrogen_hash_keygen);
 
 /**
  * Python: hydrogen.kdf_keygen()
  */
-STATIC mp_obj_t hydrogen_kdf_keygen(void){
+static mp_obj_t hydrogen_kdf_keygen(void){
     vstr_t vstr;
     vstr_init_len(&vstr, hydro_kdf_KEYBYTES);
 
@@ -506,7 +506,7 @@ STATIC mp_obj_t hydrogen_kdf_keygen(void){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keygen);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keygen);
 
 /**
  * Python: hydrogen.kdf_derive_from_key(context, master_key, subkey_id[, subkey_len])
@@ -515,7 +515,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_kdf_keygen_fun_obj, hydrogen_kdf_keyge
  * @param subkey_id
  * @param subkey_len
  */
-STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_kdf_CONTEXTBYTES);
 
     size_t master_size;
@@ -553,12 +553,12 @@ STATIC mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_kdf_derive_from_key_fun_obj, 3, 4, hydrogen_kdf_derive_from_key);
 
 /**
  * Python: hydrogen.secretbox_keygen()
  */
-STATIC mp_obj_t hydrogen_secretbox_keygen(void){
+static mp_obj_t hydrogen_secretbox_keygen(void){
     vstr_t vstr;
     vstr_init_len(&vstr, hydro_secretbox_KEYBYTES);
 
@@ -566,7 +566,7 @@ STATIC mp_obj_t hydrogen_secretbox_keygen(void){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_secretbox_keygen);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_secretbox_keygen);
 
 /**
  * Python: hydrogen.secretbox_encrypt(context, key, msg[, msg_id])
@@ -575,7 +575,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_secretbox_keygen_fun_obj, hydrogen_sec
  * @param msg
  * @param msg_id
  */
-STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
@@ -609,7 +609,7 @@ STATIC mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3, 4, hydrogen_secretbox_encrypt);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3, 4, hydrogen_secretbox_encrypt);
 
 /**
  * Python: hydrogen.secretbox_decrypt(context, key, ciphertext[, msg_id])
@@ -618,7 +618,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_encrypt_fun_obj, 3
  * @param ciphertext
  * @param msg_id
  */
-STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
@@ -657,7 +657,7 @@ STATIC mp_obj_t hydrogen_secretbox_decrypt(size_t n_args, const mp_obj_t *args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3, 4, hydrogen_secretbox_decrypt);
 
 /**
  * Python: hydrogen.secretbox_probe_create(context, key, ciphertext)
@@ -665,7 +665,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_decrypt_fun_obj, 3
  * @param key
  * @param ciphertext
  */
-STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
@@ -691,7 +691,7 @@ STATIC mp_obj_t hydrogen_secretbox_probe_create(size_t n_args, const mp_obj_t *a
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_obj, 3, 3, hydrogen_secretbox_probe_create);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_obj, 3, 3, hydrogen_secretbox_probe_create);
 
 /**
  * Python: hydrogen.secretbox_probe_verify(context, key, ciphertext, probe)
@@ -700,7 +700,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_create_fun_o
  * @param ciphertext
  * @param probe
  */
-STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *args){
+static mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_secretbox_CONTEXTBYTES);
 
     size_t key_size;
@@ -735,12 +735,12 @@ STATIC mp_obj_t hydrogen_secretbox_probe_verify(size_t n_args, const mp_obj_t *a
     }
     return mp_const_false;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_verify_fun_obj, 4, 4, hydrogen_secretbox_probe_verify);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_secretbox_probe_verify_fun_obj, 4, 4, hydrogen_secretbox_probe_verify);
 
 /**
  * Python: hydrogen.sign_keygen()
  */
-STATIC mp_obj_t hydrogen_sign_keygen(void){
+static mp_obj_t hydrogen_sign_keygen(void){
     hydro_sign_keypair key_pair;
     hydro_sign_keygen(&key_pair);
 
@@ -753,13 +753,13 @@ STATIC mp_obj_t hydrogen_sign_keygen(void){
 
     return mp_obj_new_tuple(2, tuple);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_keygen);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_sign_keygen_fun_obj, hydrogen_sign_keygen);
 
 /**
  * Python: hydrogen.sign_keygen_deterministic(seed)
  * @param seed
  */
-STATIC mp_obj_t hydrogen_sign_keygen_deterministic(mp_obj_t seed_in){
+static mp_obj_t hydrogen_sign_keygen_deterministic(mp_obj_t seed_in){
     size_t seed_size;
     const uint8_t* seed;
 
@@ -782,7 +782,7 @@ STATIC mp_obj_t hydrogen_sign_keygen_deterministic(mp_obj_t seed_in){
 
     return mp_obj_new_tuple(2, tuple);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_sign_keygen_deterministic_fun_obj, hydrogen_sign_keygen_deterministic);
+static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_sign_keygen_deterministic_fun_obj, hydrogen_sign_keygen_deterministic);
 
 /**
  * Python: hydrogen.sign_create(context, secretkey, data)
@@ -790,7 +790,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_sign_keygen_deterministic_fun_obj, hyd
  * @param secretkey
  * @param data
  */
-STATIC mp_obj_t hydrogen_sign_create(mp_obj_t context_in, mp_obj_t secretkey_in, mp_obj_t message_in){
+static mp_obj_t hydrogen_sign_create(mp_obj_t context_in, mp_obj_t secretkey_in, mp_obj_t message_in){
     const char* context = hydrogen_mp_obj_get_context(context_in, hydro_sign_CONTEXTBYTES);
 
     size_t key_size;
@@ -820,7 +820,7 @@ STATIC mp_obj_t hydrogen_sign_create(mp_obj_t context_in, mp_obj_t secretkey_in,
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_create_fun_obj, hydrogen_sign_create);
+static MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_create_fun_obj, hydrogen_sign_create);
 
 /**
  * Python: hydrogen.sign_verify(context, publickey, data, signature)
@@ -829,7 +829,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_sign_create_fun_obj, hydrogen_sign_cre
  * @param data
  * @param signature
  */
-STATIC mp_obj_t hydrogen_sign_verify(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_sign_verify(size_t n_args, const mp_obj_t* args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_sign_CONTEXTBYTES);
 
     size_t key_size;
@@ -863,12 +863,12 @@ STATIC mp_obj_t hydrogen_sign_verify(size_t n_args, const mp_obj_t* args){
     }
     return mp_const_false;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_sign_verify_fun_obj, 4, 4, hydrogen_sign_verify);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_sign_verify_fun_obj, 4, 4, hydrogen_sign_verify);
 
 /**
  * Python: hydrogen.pwhash_keygen()
  */
-STATIC mp_obj_t hydrogen_pwhash_keygen(void){
+static mp_obj_t hydrogen_pwhash_keygen(void){
     vstr_t vstr;
     vstr_init_len(&vstr, hydro_pwhash_MASTERKEYBYTES);
 
@@ -876,7 +876,7 @@ STATIC mp_obj_t hydrogen_pwhash_keygen(void){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_pwhash_keygen_fun_obj, hydrogen_pwhash_keygen);
+static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_pwhash_keygen_fun_obj, hydrogen_pwhash_keygen);
 
 /**
  * Python: hydrogen.pwhash_deterministic(context, key, passwd, hash_size, opslimit, memlimit, threads)
@@ -888,7 +888,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_pwhash_keygen_fun_obj, hydrogen_pwhash
  * @param memlimit
  * @param threads
  */
-STATIC mp_obj_t hydrogen_pwhash_deterministic(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_pwhash_deterministic(size_t n_args, const mp_obj_t* args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_pwhash_CONTEXTBYTES);
 
     size_t hash_size = mp_obj_int_get_uint_checked(args[3]);
@@ -932,7 +932,7 @@ STATIC mp_obj_t hydrogen_pwhash_deterministic(size_t n_args, const mp_obj_t* arg
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_deterministic_fun_obj, 7, 7, hydrogen_pwhash_deterministic);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_deterministic_fun_obj, 7, 7, hydrogen_pwhash_deterministic);
 
 /**
  * Python: hydrogen.pwhash_create(key, passwd, opslimit, memlimit, threads)
@@ -942,7 +942,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_deterministic_fun_obj
  * @param memlimit
  * @param threads
  */
-STATIC mp_obj_t hydrogen_pwhash_create(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_pwhash_create(size_t n_args, const mp_obj_t* args){
     size_t key_size;
     const uint8_t* key;
 
@@ -974,7 +974,7 @@ STATIC mp_obj_t hydrogen_pwhash_create(size_t n_args, const mp_obj_t* args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_create_fun_obj, 5, 5, hydrogen_pwhash_create);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_create_fun_obj, 5, 5, hydrogen_pwhash_create);
 
 /**
  * Python: hydrogen.pwhash_verify(key, passwd, stored, opslimit_max, memlimit_max, threads_max)
@@ -985,7 +985,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_create_fun_obj, 5, 5,
  * @param memlimit_max
  * @param threads_max
  */
-STATIC mp_obj_t hydrogen_pwhash_verify(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_pwhash_verify(size_t n_args, const mp_obj_t* args){
     size_t key_size;
     const uint8_t* key;
 
@@ -1021,7 +1021,7 @@ STATIC mp_obj_t hydrogen_pwhash_verify(size_t n_args, const mp_obj_t* args){
     }
     return mp_const_false;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_verify_fun_obj, 6, 6, hydrogen_pwhash_verify);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_verify_fun_obj, 6, 6, hydrogen_pwhash_verify);
 
 /**
  * Python: hydrogen.pwhash_derive_static_key(context, key, passwd, stored, static_key_size, opslimit_max, memlimit_max, threads_max)
@@ -1034,7 +1034,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_verify_fun_obj, 6, 6,
  * @param memlimit_max
  * @param threads_max
  */
-STATIC mp_obj_t hydrogen_pwhash_derive_static_key(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_pwhash_derive_static_key(size_t n_args, const mp_obj_t* args){
     const char* context = hydrogen_mp_obj_get_context(args[0], hydro_pwhash_CONTEXTBYTES);
 
     size_t key_size;
@@ -1089,7 +1089,7 @@ STATIC mp_obj_t hydrogen_pwhash_derive_static_key(size_t n_args, const mp_obj_t*
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_derive_static_key_fun_obj, 8, 8, hydrogen_pwhash_derive_static_key);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_derive_static_key_fun_obj, 8, 8, hydrogen_pwhash_derive_static_key);
 
 /**
  * Python: hydrogen.pwhash_reencrypt(stored, old_key, new_key)
@@ -1097,7 +1097,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_derive_static_key_fun
  * @param old_key
  * @param new_key
  */
-STATIC mp_obj_t hydrogen_pwhash_reencrypt(mp_obj_t stored_in, mp_obj_t key_in, mp_obj_t new_key_in){
+static mp_obj_t hydrogen_pwhash_reencrypt(mp_obj_t stored_in, mp_obj_t key_in, mp_obj_t new_key_in){
     size_t stored_size;
     const uint8_t* stored;
 
@@ -1137,7 +1137,7 @@ STATIC mp_obj_t hydrogen_pwhash_reencrypt(mp_obj_t stored_in, mp_obj_t key_in, m
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_pwhash_reencrypt_fun_obj, hydrogen_pwhash_reencrypt);
+static MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_pwhash_reencrypt_fun_obj, hydrogen_pwhash_reencrypt);
 
 /**
  * Python: hydrogen.pwhash_upgrade(stored, key, opslimit, memlimit, threads)
@@ -1147,7 +1147,7 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_3(hydrogen_pwhash_reencrypt_fun_obj, hydrogen_pwh
  * @param memlimit
  * @param threads
  */
-STATIC mp_obj_t hydrogen_pwhash_upgrade(size_t n_args, const mp_obj_t* args){
+static mp_obj_t hydrogen_pwhash_upgrade(size_t n_args, const mp_obj_t* args){
     size_t stored_size;
     const uint8_t* stored;
 
@@ -1181,10 +1181,10 @@ STATIC mp_obj_t hydrogen_pwhash_upgrade(size_t n_args, const mp_obj_t* args){
 
     return mp_obj_new_bytes_from_vstr(&vstr);
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_upgrade_fun_obj, 5, 5, hydrogen_pwhash_upgrade);
+static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(hydrogen_pwhash_upgrade_fun_obj, 5, 5, hydrogen_pwhash_upgrade);
 
 
-STATIC const mp_obj_tuple_t hydrogen_version_obj = {
+static const mp_obj_tuple_t hydrogen_version_obj = {
     {&mp_type_tuple},
     2,
     {
@@ -1193,7 +1193,7 @@ STATIC const mp_obj_tuple_t hydrogen_version_obj = {
     }
 };
 
-STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
+static const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__),                  MP_ROM_QSTR(MP_QSTR_hydrogen)                          },
     { MP_ROM_QSTR(MP_QSTR_version),                   MP_ROM_PTR(&hydrogen_version_obj)                      },
 
@@ -1255,7 +1255,7 @@ STATIC const mp_rom_map_elem_t hydrogen_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_Sign),                      MP_ROM_PTR(&hydrogen_Sign_type)                        },
 };
 
-STATIC MP_DEFINE_CONST_DICT(
+static MP_DEFINE_CONST_DICT(
     mp_module_hydrogen_globals,
     hydrogen_globals_table
     );
