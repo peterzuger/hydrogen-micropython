@@ -173,7 +173,7 @@ static mp_obj_t hydrogen_Hash_final(size_t n_args, const mp_obj_t* args){
     size_t size = hydro_hash_BYTES;
 
     if(n_args == 2){
-        // raises TypeError
+        // raises TypeError, OverflowError
         size = mp_obj_int_get_uint_checked(args[1]);
 
         if((size < hydro_hash_BYTES_MIN) || (size > hydro_hash_BYTES_MAX)){
@@ -362,7 +362,7 @@ static MP_DEFINE_CONST_FUN_OBJ_0(hydrogen_random_u32_fun_obj, hydrogen_random_u3
  * @param upper_bound
  */
 static mp_obj_t hydrogen_random_uniform(mp_obj_t upper_bound){
-    // raises TypeError
+    // raises TypeError, OverflowError
     return mp_obj_new_int(hydro_random_uniform(mp_obj_int_get_uint_checked(upper_bound)));
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_random_uniform);
@@ -372,7 +372,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_uniform_fun_obj, hydrogen_rando
  * @param len
  */
 static mp_obj_t hydrogen_random_buf(mp_obj_t len_in){
-    // raises TypeError
+    // raises TypeError, OverflowError
     size_t len = mp_obj_int_get_uint_checked(len_in);
 
     vstr_t vstr;
@@ -390,7 +390,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(hydrogen_random_buf_fun_obj, hydrogen_random_bu
  * @param seed
  */
 static mp_obj_t hydrogen_random_buf_deterministic(mp_obj_t len_in, mp_obj_t seed_in){
-    // raises TypeError
+    // raises TypeError, OverflowError
     size_t len = mp_obj_int_get_uint_checked(len_in);
 
     size_t seed_size;
@@ -461,7 +461,7 @@ static mp_obj_t hydrogen_hash_hash(size_t n_args, const mp_obj_t *args){
     size_t hash_size = hydro_hash_BYTES;
 
     if(n_args == 4){
-        // raises TypeError
+        // raises TypeError, OverflowError
         hash_size = mp_obj_int_get_uint_checked(args[3]);
 
         if((hash_size < hydro_hash_BYTES_MIN) || (hash_size > hydro_hash_BYTES_MAX)){
@@ -528,13 +528,13 @@ static mp_obj_t hydrogen_kdf_derive_from_key(size_t n_args, const mp_obj_t *args
         mp_raise_ValueError(MP_ERROR_TEXT("Master key has the wrong size"));
     }
 
-    // raises TypeError
+    // raises TypeError, OverflowError
     uint64_t subkey_id = mp_obj_int_get_uint_checked(args[2]);
 
     size_t subkey_size = hydro_kdf_KEYBYTES;
 
     if(n_args == 4){
-        // raises TypeError
+        // raises TypeError, OverflowError
         subkey_size = mp_obj_int_get_uint_checked(args[3]);
 
         if((subkey_size < hydro_kdf_BYTES_MIN) || (subkey_size > hydro_kdf_BYTES_MAX)){
@@ -597,7 +597,7 @@ static mp_obj_t hydrogen_secretbox_encrypt(size_t n_args, const mp_obj_t *args){
     uint64_t msg_id = 0;
 
     if(n_args == 4){
-        // raises TypeError
+        // raises TypeError, OverflowError
         msg_id = mp_obj_int_get_uint_checked(args[3]);
     }
 
@@ -1164,6 +1164,7 @@ static mp_obj_t hydrogen_pwhash_upgrade(size_t n_args, const mp_obj_t* args){
     // raises TypeError
     hydrogen_mp_obj_get_data(args[1], &key, &key_size);
 
+    // raises TypeError, OverflowError
     uint64_t opslimit = mp_obj_int_get_uint_checked(args[2]);
     size_t memlimit = mp_obj_int_get_uint_checked(args[3]);
     uint8_t threads = mp_obj_int_get_uint_checked(args[4]);
